@@ -86,6 +86,7 @@ const App = () => {
       if (
         activateMatch ||
         resetPasswordMatch ||
+        location.pathname === "/signup" ||
         location.pathname === "/resend_activation" ||
         location.pathname === "/send_reset_password"
       ) {
