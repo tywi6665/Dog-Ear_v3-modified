@@ -19,7 +19,7 @@ import django_on_heroku
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-FRONTEND_DIR = os.path.join(BASE_DIR, 'client')
+FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 # print("---------", FRONTEND_DIR)
 
 dotenv_file = os.path.join(BASE_DIR, ".env")
