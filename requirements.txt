@@ -10,6 +10,8 @@ djoser==2.2.0
 environ==1.0
 gunicorn==21.2.0
 itemadapter==0.7.0
+psycopg2==2.9.7
+psycopg2-binary==2.9.5
 python-dotenv==0.21.1
 python-scrapyd-api==2.1.2
 Scrapy==2.8.0

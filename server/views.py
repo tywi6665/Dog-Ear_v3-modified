@@ -13,7 +13,7 @@ def hello(request):
 # Serve Single Page Application
 class FrontendAppView(View):
 
-    index_file_path = os.path.join(settings.FRONTEND_DIR, 'frontend/build', 'index.html')
+    index_file_path = os.path.join(settings.FRONTEND_DIR, 'build', 'index.html')
 
     def get(self, request):
         try:
