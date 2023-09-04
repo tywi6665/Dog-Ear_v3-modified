@@ -1,8 +1,11 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "engines": {
+    "node": "14.15.3"
+  },
   "private": true,
-  "homepage": "http://localhost:3000",
+  "homepage": ".",
   "proxy": "http://localhost:8000",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",

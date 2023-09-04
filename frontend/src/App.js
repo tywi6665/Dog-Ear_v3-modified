@@ -34,6 +34,9 @@ import { useWakeLock } from "react-screen-wake-lock";
 //   axios.defaults.baseURL = window.location.origin;
 // }
 
+axios.defaults.xsrfCookieName = "csrftoken";
+axios.defaults.xsrfHeaderName = "X-CSRFToken";
+
 const App = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
