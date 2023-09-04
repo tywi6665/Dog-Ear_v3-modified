@@ -50,18 +50,12 @@ INSTALLED_APPS = [
     'django_filters',
     'djoser',
     'corsheaders',
-    'health_check',  # required
-    'health_check.db',  # stock Django health checkers
-    'health_check.storage',
-    'health_check.contrib.migrations',
-    'django_prometheus',
     'apps.accounts',
     'apps.recipes',
     'apps.scraper',
 ]
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,7 +66,6 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 #configure DRF
