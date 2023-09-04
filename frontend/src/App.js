@@ -28,11 +28,11 @@ import ErrorPage from "./components/ErrorPage";
 import RequireAuth from "./utils/RequireAuth";
 import { useWakeLock } from "react-screen-wake-lock";
 
-// if (window.location.origin === "http://localhost:3000") {
-//   axios.defaults.baseURL = "http://localhost:3000";
-// } else {
-//   axios.defaults.baseURL = window.location.origin;
-// }
+if (window.location.origin === "http://localhost:3000") {
+  axios.defaults.baseURL = "http://localhost:3000";
+} else {
+  axios.defaults.baseURL = window.location.origin;
+}
 
 // axios.defaults.xsrfCookieName = "csrftoken";
 // axios.defaults.xsrfHeaderName = "X-CSRFToken";

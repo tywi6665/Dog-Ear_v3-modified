@@ -15,7 +15,7 @@ export const login = (
   // callback
 ) => {
   axios
-    .post("api/v1/token/login/", userData) // post to login REST API
+    .post("/api/v1/token/login/", userData) // post to login REST API
     .then((response) => {
       const { auth_token } = response.data; // get auth_token
       setAxiosAuthToken(auth_token); // set token in axios header
@@ -35,7 +35,7 @@ export const getCurrentUser = (
   displayMessage
 ) => {
   axios
-    .get("api/v1/users/me/")
+    .get("/api/v1/users/me/")
     .then((response) => {
       const user = {
         username: response.data.username,

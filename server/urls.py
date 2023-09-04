@@ -25,9 +25,9 @@ from .views import FrontendAppView
 
 urlpatterns = [
     # path(r'', never_cache(FrontendAppView.as_view()), name='index'),
+   path('admin/', admin.site.urls),
    re_path(r"^$", never_cache(FrontendAppView.as_view())),
    re_path(r"^(?:.*)/?$", never_cache(FrontendAppView.as_view())),
-   path('admin/', admin.site.urls),
 ]
 
 urlpatterns += accounts_urlpatterns
