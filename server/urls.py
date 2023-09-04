@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from apps.accounts.urls import accounts_urlpatterns
 from apps.recipes.urls import recipes_urlpatterns
 from apps.scraper.urls import scraper_urlpatterns
@@ -24,8 +24,10 @@ from django.views.decorators.cache import never_cache
 from .views import FrontendAppView
 
 urlpatterns = [
-    path(r'', never_cache(FrontendAppView.as_view()), name='index'),
-    path('admin/', admin.site.urls),
+    # path(r'', never_cache(FrontendAppView.as_view()), name='index'),
+   re_path(r"^$", never_cache(FrontendAppView.as_view())),
+   re_path(r"^(?:.*)/?$", never_cache(FrontendAppView.as_view())),
+   path('admin/', admin.site.urls),
 ]
 
 urlpatterns += accounts_urlpatterns
