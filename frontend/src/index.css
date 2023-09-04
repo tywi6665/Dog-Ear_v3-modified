@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+html, #root {
+  min-height: 100% !important;
+  height: 100%;
+}
+
+.ant-btn-primary {
+  background-color: #1677ff;
+}
+
+.anticon {
+  vertical-align: 2px !important;
+}
+
+.ant-message-custom-content {
+      display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.ant-float-btn-default{
+background-color: #fff !important;
+}
+
+.ant-float-btn-body {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.btn {
+  background-color: transparent !important;
+  color: #d32f2f !important;
+  border-color: #d32f2f !important;
+}
+.btn-active {
+  background-color: #d32f2f !important;
+  color: #fff !important;
+}
+.btn-active:disabled {
+  opacity: 0.65;
+}
+
+.ant-timeline-item-last {
+  padding-bottom: 0 !important;
+}
+.ant-timeline-item-last div {
+  min-height: -moz-fit-content !important;
+  min-height: fit-content !important;
+}
+
+.ant-ribbon-wrapper {
+  width: 100% !important;
+}
+
+.ant-card-cover {
+  max-width: 300px;
+  height: 200px;
+  overflow: hidden;
+}
+.ant-card-cover img {
+  height: 100%;
+  width: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.ant-card-body {
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+.ant-card-body .ant-card-meta-description {
+  color: rgba(0, 0, 0, 0.88) !important;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.ant-float-btn-group-wrap button {
+  border: 1px #d32f2f solid;
+}
+
+.ant-tabs-tab:hover {
+  color: #d32f2f !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #d32f2f !important;
+}
+
+.ant-tabs-ink-bar {
+  background: #d32f2f !important;
+}
+
+#recipe-entry .ant-space-item, #recipe-edit .ant-space-item {
+  width: 100%;
+  text-align: center;
+}
+
+#recipe-entry .ant-space-item:nth-child(2) .ant-form-item:nth-child(7) .ant-col:nth-child(2) {
+  flex: 1 1 210px !important;
+}
+
+#recipe-edit {
+  padding: calc(8px + 1.5625vw);
+}
+
+#recipe-edit form .ant-form-item:nth-child(7) .ant-col:nth-child(2) {
+  flex: 1 1 230px;
+}
+
+.dog-head {
+  animation: head-move 1s ease-in-out infinite;
+}
+
+@keyframes head-move {
+  50% {
+    transform: rotate(-10.5deg);
+  }
+}
+
+

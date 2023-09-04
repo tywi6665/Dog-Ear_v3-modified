@@ -1,0 +1,23 @@
+{
+  "name": "recipe-repository",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "14.15.3"
+  },
+  "scripts": {
+    "heroku-prebuild": "NODE_ENV=production cd frontend/ && npm install && npm run build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
