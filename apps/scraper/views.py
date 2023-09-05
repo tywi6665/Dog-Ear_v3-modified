@@ -10,8 +10,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from apps.scraper.serializers import ScrapedRecipeItemSerializer
 from apps.scraper.models import ScrapedRecipeItem
-import logging
-logger = logging.getLogger(__name__)
 import json
 
 class ScrapedRecipeItemView(viewsets.ModelViewSet):
@@ -43,14 +41,13 @@ def scrape(request):
     # POST requests == new crawling task
     data = json.loads(request.body.decode('utf-8'))
     print("-----Data-----", data)
-    logger.debug(data)
     if data.get('body').get('method') == 'POST':
         # take unique_id from client
         unique_id = data.get("body").get('unique_id', None)
-        logger.debug("-----Unique ID-----", unique_id)
+        print("-----Unique ID-----", unique_id)
         # take url from client
         url = data.get("body").get('url', None)
-        logger.debug("-----URL-----", url)
+        print("-----URL-----", url)
         # if url does not exist
         if not url:
             return JsonResponse({'error': 'Missing args'})
@@ -60,10 +57,10 @@ def scrape(request):
 
         # parse the url and extract its domain
         domain = urlparse(url).netloc
-        logger.debug("-----Domain-----", domain)
+        print("-----Domain-----", domain)
 
         user = data.get('body').get('user')
-        logger.debug("-----User-----", user)
+        print("-----User-----", user)
         # # create a unique id
         # unique_id = str(uuid4())
         # custom settings for scrapy spider
@@ -74,7 +71,7 @@ def scrape(request):
 
         # schedule a new crawling task
         # return a id which will be used to check on the task's status
-        logger.debug("-----Scheduling Crawler-----")
+        print("-----Scheduling Crawler-----")
 
         task = scrapyd.schedule(
             'default',
@@ -95,8 +92,8 @@ def scrape(request):
     # GET requests are for checking on status of specific crawling task
     elif data.get('body').get('method') == 'GET':
         # if crawling is complete, then crawled data is returned
-        logger.debug("-----Task ID-----", data.get('body').get('task_id'))
-        logger.debug("-----Unique ID-----", data.get('body').get('unique_id'))
+        print("-----Task ID-----", data.get('body').get('task_id'))
+        print("-----Unique ID-----", data.get('body').get('unique_id'))
 
         task_id = data.get('body').get('task_id', None)
         unique_id = data.get('body').get('unique_id', None)
@@ -111,13 +108,13 @@ def scrape(request):
         # else return active status
         # possible results are => pending, running, finished
         status = scrapyd.job_status('default', task_id)
-        logger.debug(status)
+        print(status)
         if status == 'finished':
             try:
                 # this is the unique_id that was created above
                 item = ScrapedRecipeItem.objects.get(unique_id=unique_id)
                 # title = RecipeItem.objects.get('title')
-                logger.debug('------Item------', item)
+                print('------Item------', item)
                 return JsonResponse({'data': item.to_dict})
             except Exception as e:
                 return JsonResponse({'error': str(e)})
