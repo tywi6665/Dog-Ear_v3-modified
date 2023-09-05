@@ -232,7 +232,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                   src={
                     recipe.img_src
                       ? recipe.img_src
-                      : "./static/graphics/default_image.jpg"
+                      : "../../static/graphics/default_image.jpg"
                   }
                 />
                 <div className="absolute top-[40%] bottom-0 inset-0 bg-gradient-to-b from-transparent to-[#f5f5f5]"></div>

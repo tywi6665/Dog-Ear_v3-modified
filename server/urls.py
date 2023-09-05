@@ -34,6 +34,6 @@ urlpatterns += scraper_urlpatterns
 
 urlpatterns += [
     re_path(r"^$", never_cache(FrontendAppView.as_view())),
-    re_path(r"^(?:.*)/?$", never_cache(FrontendAppView.as_view()))
+    # re_path(r"^(?:.*)/?$", never_cache(FrontendAppView.as_view()))
 ]
 
