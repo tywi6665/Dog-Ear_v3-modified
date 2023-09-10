@@ -66,7 +66,7 @@ const Navbar = () => {
         ) : null}
         <img
           className="pl-[5px] max-h-full"
-          src="./static/graphics/dog.png"
+          src="/static/graphics/dog.png"
           alt="Woof woof"
         />
       </Col>

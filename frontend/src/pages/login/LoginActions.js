@@ -58,9 +58,8 @@ export const getCurrentUser = (
 };
 
 export const set_CurrentUser = (user, redirectTo, navigate, dispatch) => {
-  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("de_user", JSON.stringify(user));
   dispatch(setCurrentUser(user));
-
   if (redirectTo !== "") {
     navigate(redirectTo);
   }
@@ -68,14 +67,14 @@ export const set_CurrentUser = (user, redirectTo, navigate, dispatch) => {
 
 export const set_Token = (token, dispatch) => {
   setAxiosAuthToken(token);
-  localStorage.setItem("token", token);
+  localStorage.setItem("de_token", token);
   dispatch(setToken(token));
 };
 
 export const unset_CurrentUser = (dispatch) => {
   setAxiosAuthToken("");
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  localStorage.removeItem("de_token");
+  localStorage.removeItem("de_user");
   dispatch(unsetCurrentUser());
 };
 

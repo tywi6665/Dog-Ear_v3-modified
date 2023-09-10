@@ -252,7 +252,7 @@ const RecipeEntry = ({
                 ) : (
                   <img
                     className="w-[225px] h-[225px] max-w-[225px] max-h-[255px] mt-0 mb-[15px] mx-auto object-cover rounded-lg"
-                    src={"./static/graphics/default_image.jpg"}
+                    src={"/static/graphics/default_image.jpg"}
                   />
                 )}
                 <Form
@@ -435,12 +435,12 @@ const RecipeEntry = ({
                 <div className="dog-head z-[100]">
                   <img
                     className="h-full w-full"
-                    src="./static/graphics/dog-head.png"
+                    src="/static/graphics/dog-head.png"
                   />
                 </div>
                 <img
                   className="h-full w-10/12 mt-[-62px] mb-2.5 mx-auto bg-contain bg-center bg-no-repeat"
-                  src="./static/graphics/dog-body-md.png"
+                  src="/static/graphics/dog-body-md.png"
                 />
               </div>
               <p className="text-center">

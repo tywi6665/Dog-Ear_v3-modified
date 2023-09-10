@@ -25,7 +25,6 @@ import Recipe from "./pages/recipe/Recipe";
 import RecipeEdit from "./pages/edit/RecipeEdit";
 import NotFoundPage from "./components/NotFoundPage";
 import ErrorPage from "./components/ErrorPage";
-import RequireAuth from "./utils/RequireAuth";
 import { useWakeLock } from "react-screen-wake-lock";
 
 if (window.location.origin === "http://localhost:3000") {
@@ -66,11 +65,11 @@ const App = () => {
 
   useEffect(() => {
     // check localStorage
-    if (!isEmpty(localStorage.getItem("token"))) {
-      set_Token(localStorage.getItem("token"), dispatch);
+    if (!isEmpty(localStorage.getItem("de_token"))) {
+      set_Token(localStorage.getItem("de_token"), dispatch);
     }
-    if (!isEmpty(localStorage.getItem("user"))) {
-      const user = JSON.parse(localStorage.getItem("user"));
+    if (!isEmpty(localStorage.getItem("de_user"))) {
+      const user = JSON.parse(localStorage.getItem("de_user"));
       let redirectTo;
       if (
         location.pathname === "/signup" ||

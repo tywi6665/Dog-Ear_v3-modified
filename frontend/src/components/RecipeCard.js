@@ -29,7 +29,7 @@ const RecipeCard = ({ recipe }) => {
                 src={
                   recipe.img_src
                     ? recipe.img_src
-                    : "./static/graphics/default_image.jpg"
+                    : "/static/graphics/default_image.jpg"
                 }
               />
             }
@@ -50,7 +50,7 @@ const RecipeCard = ({ recipe }) => {
               src={
                 recipe.img_src
                   ? recipe.img_src
-                  : "./static/graphics/default_image.jpg"
+                  : "/static/graphics/default_image.jpg"
               }
             />
           }
