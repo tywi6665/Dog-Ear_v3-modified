@@ -43,6 +43,8 @@ urlpatterns += [
     path("catalog/", never_cache(FrontendAppView.as_view())),
     path("catalog/recipe/<str:id>/", never_cache(FrontendAppView.as_view())),
     path("catalog/recipe/<str:id>/edit/", never_cache(FrontendAppView.as_view())),
-    re_path(r"^(?:.*)?$", never_cache(FrontendAppView.as_view())),
+    path("/", never_cache(FrontendAppView.as_view())),
+
+    # re_path(r"^(?:.*)?$", never_cache(FrontendAppView.as_view())),
 ]
 
