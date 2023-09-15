@@ -35,15 +35,15 @@ urlpatterns += scraper_urlpatterns
 urlpatterns += [
     # re_path(r"^(?:.*)?$", never_cache(FrontendAppView.as_view())),
     path("login/", never_cache(FrontendAppView.as_view())),
-    path("activate/<str:uid>/<str:token>/", never_cache(FrontendAppView.as_view())),
+    path("activate/<str:uid>/<slug:token>/", never_cache(FrontendAppView.as_view())),
     path("resend_activation/", never_cache(FrontendAppView.as_view())),
-    path("reset_password/<str:uid>/<str:token>/", never_cache(FrontendAppView.as_view())),
+    path("reset_password/<str:uid>/<slug:token>/", never_cache(FrontendAppView.as_view())),
     path("send_reset_password/", never_cache(FrontendAppView.as_view())),
     path("signup/", never_cache(FrontendAppView.as_view())),
     path("catalog/", never_cache(FrontendAppView.as_view())),
-    path("catalog/recipe/<str:id>/", never_cache(FrontendAppView.as_view())),
-    path("catalog/recipe/<str:id>/edit/", never_cache(FrontendAppView.as_view())),
-    path("/", never_cache(FrontendAppView.as_view())),
+    path("catalog/recipe/<uuid:id>/", never_cache(FrontendAppView.as_view())),
+    path("catalog/recipe/<uuid:id>/edit/", never_cache(FrontendAppView.as_view())),
+    path("^(?:.*)?$", never_cache(FrontendAppView.as_view())),
 
     # re_path(r"^(?:.*)?$", never_cache(FrontendAppView.as_view())),
 ]
