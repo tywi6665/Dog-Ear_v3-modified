@@ -7,7 +7,7 @@ import {
 
 export const get_Recipe = (id, dispatch, displayMessage) => {
   axios
-    .get(`/api/v1/recipes/${id}`)
+    .get(`/api/v1/recipes/${id}/`)
     .then((res) => {
       dispatch(getRecipe(res.data));
     })
