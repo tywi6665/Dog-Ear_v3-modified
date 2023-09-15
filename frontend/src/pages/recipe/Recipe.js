@@ -179,7 +179,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
     }
   };
 
-  return Object.keys(recipe).length ? (
+  return typeof recipe === "object" && Object.keys(recipe).length ? (
     <Layout className="w-full pt-0 pb-20">
       <Content>
         <Row className="w-full">
