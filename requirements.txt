@@ -16,4 +16,5 @@ python-dotenv==0.21.1
 python-scrapyd-api==2.1.2
 Scrapy==2.8.0
 scrapyd==1.4.1
+scrapyd-heroku==0.2.2
 scrapyd_api==0.0.1

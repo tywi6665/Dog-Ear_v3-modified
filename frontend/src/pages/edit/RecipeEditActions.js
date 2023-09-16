@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const update_Recipe = (id, recipe, navigate, displayMessage) => {
-  console.log(recipe);
   axios
     .put(`/api/v1/recipes/${id}/`, recipe)
     .then((res) => {
