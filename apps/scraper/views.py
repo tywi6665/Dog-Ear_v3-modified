@@ -71,7 +71,7 @@ def scrape(request):
 
         # schedule a new crawling task
         # return a id which will be used to check on the task's status
-        print("-----Scheduling Crawler-----")
+        print("-----Scheduling Spider-----")
 
         task = scrapyd.schedule(
             'default',
