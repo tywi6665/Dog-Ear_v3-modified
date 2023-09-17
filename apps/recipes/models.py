@@ -18,4 +18,4 @@ class RecipeItem(models.Model):
     ingredients = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
     steps = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
     timestamp = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(User, default="jowo", on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, default="himynameisjs", on_delete=models.CASCADE)
