@@ -114,7 +114,8 @@ EMAIL_PORT = 587
 SITE_NAME = "Dog-Ear Recipe Repository"
 
 PROTOCOL = "http"
-DOMAIN = "localhost:3000"
+# DOMAIN = "localhost:3000"
+DOMAIN = "dog-ear-v3-e506b35ffcf6.herokuapp.com"
 if not DEBUG:
     PROTOCOL = "https"
     DOMAIN = ""
