@@ -24,7 +24,6 @@ import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
 //   directUploadFinish,
 // } from "../../utils/upload";
 import { UploadOutlined } from "@ant-design/icons";
-// import { v4 as uuidv4 } from "uuid";
 
 const RecipeEntry = ({
   //   recipe,

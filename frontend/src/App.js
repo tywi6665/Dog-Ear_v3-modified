@@ -23,6 +23,7 @@ import Signup from "./pages/signup/Signup";
 import Catalog from "./pages/catalog/Catalog";
 import Recipe from "./pages/recipe/Recipe";
 import RecipeEdit from "./pages/edit/RecipeEdit";
+import Stats from "./pages/stats/Stats";
 import NotFoundPage from "./components/NotFoundPage";
 import ErrorPage from "./components/ErrorPage";
 import { useWakeLock } from "react-screen-wake-lock";
@@ -173,6 +174,13 @@ const App = () => {
           path="catalog/recipe/:id/edit"
           element={
             <RecipeEdit dispatch={dispatch} displayMessage={displayMessage} />
+          }
+          errorElement={<ErrorPage />}
+        />
+        <Route
+          path="stats"
+          element={
+            <Stats dispatch={dispatch} displayMessage={displayMessage} />
           }
           errorElement={<ErrorPage />}
         />

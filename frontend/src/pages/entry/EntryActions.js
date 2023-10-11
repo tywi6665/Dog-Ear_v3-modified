@@ -48,7 +48,7 @@ export const disconnect = (
   if (hadError == true) {
     set_HadError(false);
   } else if (type === "scrape") {
-    delete_ScrapedRecipe(unique_id);
+    // delete_ScrapedRecipe(unique_id);
   }
   set_ScrapedRecipe({}, dispatch);
   set_TaskID("", dispatch);
@@ -64,29 +64,29 @@ async function startScrape(url, user, dispatch) {
     return false;
   }
   let unique_id = uuidv4();
-  const entryAdded = createDBEntry(unique_id, url);
-  if (entryAdded) {
-    set_UniqueID(unique_id, dispatch);
-    const response = await axios
-      .post("/api/v1/scraper/", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: { method: "POST", unique_id: unique_id, url: url, user: user },
-      })
-      .then((response) => response.data)
-      .then((data) => {
-        set_TaskID(data.task_id, dispatch);
-        set_ScrapingStatus(data.status, dispatch);
-        statusInterval = setInterval(
-          () => checkScrapeStatus(data.task_id, unique_id, url, user, dispatch),
-          2000
-        );
-      })
-      .catch((error) => console.error("Error:", error));
-  } else {
-    return false;
-  }
+  // const entryAdded = createDBEntry(unique_id, url);
+  // if (entryAdded) {
+  set_UniqueID(unique_id, dispatch);
+  const response = await axios
+    .post("/api/v1/scraper/", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: { method: "POST", unique_id: unique_id, url: url, user: user },
+    })
+    .then((response) => response.data)
+    .then((data) => {
+      set_TaskID(data.task_id, dispatch);
+      set_ScrapingStatus(data.status, dispatch);
+      statusInterval = setInterval(
+        () => checkScrapeStatus(data.task_id, unique_id, url, user, dispatch),
+        2000
+      );
+    })
+    .catch((error) => console.error("Error:", error));
+  // } else {
+  //   return false;
+  // }
 }
 
 async function checkScrapeStatus(task_id, unique_id, url, user, dispatch) {
@@ -140,29 +140,29 @@ async function checkScrapeStatus(task_id, unique_id, url, user, dispatch) {
     });
 }
 
-async function createDBEntry(unique_id, url) {
-  await axios
-    .post("/api/v1/scrapedrecipe/", { unique_id: unique_id, url: url })
-    .then((res) => {
-      console.log("Blank DB entry successfully added");
-      return true;
-    })
-    .catch((error) => {
-      console.log(error);
-      return false;
-    });
-}
+// async function createDBEntry(unique_id, url) {
+//   await axios
+//     .post("/api/v1/scrapedrecipe/", { unique_id: unique_id, url: url })
+//     .then((res) => {
+//       console.log("Blank DB entry successfully added");
+//       return true;
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//       return false;
+//     });
+// }
 
-export const delete_ScrapedRecipe = (id) => {
-  axios
-    .delete(`/api/v1/scrapedrecipe/${id}/`)
-    .then((res) => {
-      console.log(`ScrapedRecipeItem for ${id} was successfully deleted`);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
+// export const delete_ScrapedRecipe = (id) => {
+//   axios
+//     .delete(`/api/v1/scrapedrecipe/${id}/`)
+//     .then((res) => {
+//       console.log(`ScrapedRecipeItem for ${id} was successfully deleted`);
+//     })
+//     .catch((error) => {
+//       console.log(error);
+//     });
+// };
 
 export const set_TaskID = (id, dispatch) => {
   dispatch(setTaskID(id));

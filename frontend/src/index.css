@@ -93,6 +93,10 @@ background-color: #fff !important;
   -webkit-line-clamp: 2;
 }
 
+.stat-card .ant-card-body {
+height: fit-content;
+}
+
 .ant-float-btn-group-wrap button {
   border: 1px #d32f2f solid;
 }

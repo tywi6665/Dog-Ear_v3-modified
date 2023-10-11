@@ -25,7 +25,8 @@ import {
   Result,
   Typography,
 } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { PlusCircleOutlined, BarChartOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
   const { Header, Content } = Layout;
@@ -33,6 +34,8 @@ const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [entryType, setEntryType] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const navigate = useNavigate();
 
   const recipes = useSelector((state) => state.catalog.recipes);
   const filteredRecipes = useSelector((state) => state.catalog.filteredRecipes);
@@ -216,6 +219,11 @@ const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
             <FloatButton
               onClick={(e) => [setIsSubmitted(true), showModal("blank")]}
               tooltip={<div>Blank Template</div>}
+            />
+            <FloatButton
+              icon={<BarChartOutlined />}
+              onClick={() => navigate("/stats")}
+              tooltip={<div>Statistics</div>}
             />
           </FloatButton.Group>
           <FloatButton.BackTop
