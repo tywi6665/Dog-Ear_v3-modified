@@ -128,8 +128,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSP_FRAME_ANCESTORS = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
-CSP_STYLE_SRC = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
-CSP_IMG_SRC = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
+CSP_STYLE_SRC = ["*"]
+CSP_IMG_SRC = ["*"]
 
 ROOT_URLCONF = 'server.urls'
 
