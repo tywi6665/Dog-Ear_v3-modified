@@ -24,7 +24,7 @@ const Metrics = () => {
       label: "Health",
       children: (
         <iframe
-          src={`${axios.defaults.baseURL}/health`}
+          src={`${axios.defaults.baseURL}/health/`}
           width="100%"
           height="300px"
         />
