@@ -128,7 +128,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSP_FRAME_ANCESTORS = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
-CSP_DEFAULT_SRC = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
+CSP_DEFAULT_SRC = ["unsafe-inline", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
 # CSP_INCLUDE_NONCE_IN = [
 #     'script-src',
 #     'style-src',
