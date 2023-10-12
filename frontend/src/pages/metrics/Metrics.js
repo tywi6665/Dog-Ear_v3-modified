@@ -14,10 +14,6 @@ const Metrics = () => {
     console.log(key);
   };
 
-  axios.get(`/health`).then((res) => {
-    console.log(res);
-  });
-
   const items = [
     {
       key: "1",
