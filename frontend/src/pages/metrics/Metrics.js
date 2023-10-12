@@ -21,27 +21,25 @@ const Metrics = () => {
   const items = [
     {
       key: "1",
-      label: "Tab 1",
+      label: "Health",
       children: (
-        <>
-          <a
-            href={`${axios.defaults.baseURL}/prometheus/metrics`}
-            target="_blank"
-          >
-            http://localhost:8000/prometheus/metrics/
-          </a>
-          <iframe
-            src={`${axios.defaults.baseURL}/prometheus/metrics`}
-            width="100%"
-            height="200px"
-          />
-        </>
+        <iframe
+          src={`${axios.defaults.baseURL}/health`}
+          width="100%"
+          height="300px"
+        />
       ),
     },
     {
       key: "2",
-      label: "Tab 2",
-      children: "Content of Tab Pane 2",
+      label: "Metrics",
+      children: (
+        <iframe
+          src={`${axios.defaults.baseURL}/prometheus/metrics`}
+          width="100%"
+          height="500px"
+        />
+      ),
     },
   ];
 
@@ -60,7 +58,12 @@ const Metrics = () => {
         </Title>
       </Header>
       <Card bordered={false} className="metrics-card w-full">
-        <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+        <Tabs
+          defaultActiveKey="1"
+          className="w-full"
+          items={items}
+          onChange={onChange}
+        />
       </Card>
     </Content>
   );
