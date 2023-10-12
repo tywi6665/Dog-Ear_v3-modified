@@ -229,11 +229,11 @@ const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
               onClick={() => navigate("/stats")}
               tooltip={<div>Statistics</div>}
             />
-            <FloatButton
+            {/* <FloatButton
               icon={<DashboardOutlined />}
               onClick={() => navigate("/metrics")}
               tooltip={<div>Site Metrics</div>}
-            />
+            /> */}
           </FloatButton.Group>
           <FloatButton.BackTop
             className="bottom-[55px]"

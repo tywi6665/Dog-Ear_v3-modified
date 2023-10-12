@@ -179,11 +179,11 @@ const App = () => {
           errorElement={<ErrorPage />}
         />
         <Route path="stats" element={<Stats />} errorElement={<ErrorPage />} />
-        <Route
+        {/* <Route
           path="metrics"
           element={<Metrics />}
           errorElement={<ErrorPage />}
-        />
+        /> */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Outlet />

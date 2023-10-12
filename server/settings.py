@@ -62,7 +62,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
-    'csp.middleware.CSPMiddleware',
+    # 'csp.middleware.CSPMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -127,15 +127,15 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000"
 ]
 
-CSP_FRAME_ANCESTORS = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
-CSP_DEFAULT_SRC = ["unsafe-inline", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
+# CSP_FRAME_ANCESTORS = ["'self'", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
+# CSP_DEFAULT_SRC = ["unsafe-inline", "https://dog-ear-v3-e506b35ffcf6.herokuapp.com/"]
 # CSP_INCLUDE_NONCE_IN = [
 #     'script-src',
 #     'style-src',
 #     'img-src'
 # ]
 # CSP_STYLE_SRC = ["*"]
-CSP_IMG_SRC = ["*"]
+# CSP_IMG_SRC = ["*"]
 
 ROOT_URLCONF = 'server.urls'
 
