@@ -24,6 +24,7 @@ import Catalog from "./pages/catalog/Catalog";
 import Recipe from "./pages/recipe/Recipe";
 import RecipeEdit from "./pages/edit/RecipeEdit";
 import Stats from "./pages/stats/Stats";
+import Metrics from "./pages/metrics/Metrics";
 import NotFoundPage from "./components/NotFoundPage";
 import ErrorPage from "./components/ErrorPage";
 import { useWakeLock } from "react-screen-wake-lock";
@@ -177,11 +178,10 @@ const App = () => {
           }
           errorElement={<ErrorPage />}
         />
+        <Route path="stats" element={<Stats />} errorElement={<ErrorPage />} />
         <Route
-          path="stats"
-          element={
-            <Stats dispatch={dispatch} displayMessage={displayMessage} />
-          }
+          path="metrics"
+          element={<Metrics />}
           errorElement={<ErrorPage />}
         />
         <Route path="*" element={<NotFoundPage />} />

@@ -25,7 +25,11 @@ import {
   Result,
   Typography,
 } from "antd";
-import { PlusCircleOutlined, BarChartOutlined } from "@ant-design/icons";
+import {
+  PlusCircleOutlined,
+  BarChartOutlined,
+  DashboardOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
@@ -224,6 +228,11 @@ const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
               icon={<BarChartOutlined />}
               onClick={() => navigate("/stats")}
               tooltip={<div>Statistics</div>}
+            />
+            <FloatButton
+              icon={<DashboardOutlined />}
+              onClick={() => navigate("/metrics")}
+              tooltip={<div>Site Metrics</div>}
             />
           </FloatButton.Group>
           <FloatButton.BackTop

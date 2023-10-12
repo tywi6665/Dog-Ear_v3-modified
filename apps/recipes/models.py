@@ -1,10 +1,11 @@
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
+from django_prometheus.models import ExportModelOperationsMixin
 
 User = get_user_model()
 
-class RecipeItem(models.Model):
+class RecipeItem(ExportModelOperationsMixin('RecipeItem'), models.Model):
     unique_id = models.UUIDField(default="", unique=True)
     url = models.URLField(max_length=300, default="", blank=True)
     title = models.CharField(max_length=100, default="")

@@ -93,7 +93,7 @@ background-color: #fff !important;
   -webkit-line-clamp: 2;
 }
 
-.stat-card .ant-card-body {
+.stat-card .ant-card-body, .metrics-card .ant-card-body {
 height: fit-content;
 }
 
