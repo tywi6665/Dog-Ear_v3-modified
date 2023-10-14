@@ -33,17 +33,16 @@ const Stats = () => {
       { label: "5", total: 0 },
     ];
     let ave = 0;
+    let notNullLength = 0;
     recipes.forEach((recipe) => {
-      console.log(
-        dist[recipe.rating],
-        +dist[recipe.rating].total,
-        +dist[recipe.rating].total + 1
-      );
-      ave = ave + +recipe.rating;
+      if (+recipe.rating !== 0) {
+        ave = ave + +recipe.rating;
+        notNullLength++;
+      }
       return (dist[recipe.rating].total = +dist[recipe.rating].total + 1);
     });
 
-    ave = ave / recipes.length;
+    ave = ave / notNullLength;
     console.log(dist, ave);
     setRatingsData(dist);
     setAverage(ave);

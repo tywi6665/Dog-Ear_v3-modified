@@ -19,4 +19,7 @@ class RecipeItem(ExportModelOperationsMixin('RecipeItem'), models.Model):
     ingredients = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
     steps = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
     timestamp = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(User, default="himynameisjs", on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title

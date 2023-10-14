@@ -26,7 +26,7 @@ from .views import FrontendAppView
 urlpatterns = [
     # path(r'', never_cache(FrontendAppView.as_view()), name='index'),
    path('admin/', admin.site.urls),
-   path('prometheus/', include('django_prometheus.urls')),
+   path('', include('django_prometheus.urls')),
    path(r'health/', include('health_check.urls'))
 ]
 

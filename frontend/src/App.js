@@ -178,7 +178,13 @@ const App = () => {
           }
           errorElement={<ErrorPage />}
         />
-        <Route path="stats" element={<Stats />} errorElement={<ErrorPage />} />
+        <Route
+          path="stats"
+          element={
+            <Stats dispatch={dispatch} displayMessage={displayMessage} />
+          }
+          errorElement={<ErrorPage />}
+        />
         {/* <Route
           path="metrics"
           element={<Metrics />}
