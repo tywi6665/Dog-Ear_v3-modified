@@ -16,6 +16,7 @@ import {
   List,
   Avatar,
   Typography,
+  DatePicker,
 } from "antd";
 import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
 // import {
@@ -24,6 +25,10 @@ import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
 //   directUploadFinish,
 // } from "../../utils/upload";
 import { UploadOutlined } from "@ant-design/icons";
+
+// DELETE THIS
+import moment from "moment";
+import dayjs from "dayjs";
 
 const RecipeEntry = ({
   //   recipe,
@@ -61,6 +66,8 @@ const RecipeEntry = ({
   const [steps, setSteps] = useState("");
   const [hasMade, setHasMade] = useState(false);
   const [rating, setRating] = useState(0);
+  // DELETE THIS
+  const [timestamp, setTimestamp] = useState("");
   //   const [urlNotNeeded, setUrlNotNeeded] = useState(false);
 
   const user = useSelector((state) => state.login.user.username);
@@ -134,6 +141,8 @@ const RecipeEntry = ({
       rating: rating,
       ingredients: parseIngredients(ingredients),
       steps: parseIngredients(steps),
+      // DELETE THIS
+      timestamp: timestamp,
     };
     handleAddRecipe(recipe);
     disconnect(
@@ -144,6 +153,18 @@ const RecipeEntry = ({
       setIsSubmitted,
       dispatch
     );
+  };
+
+  // DELETE THIS
+  const onChange = (date) => {
+    if (date) {
+      // YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
+      console.log("Date: ", moment(date.$d).utc().format());
+      // setTimestamp(dayjs(date.$d).format("YYYY-MM-DD HH:mm:ss"));
+      setTimestamp(moment(date.$d).utc().format());
+    } else {
+      console.log("Clear");
+    }
   };
 
   // useEffect(() => {
@@ -275,7 +296,6 @@ const RecipeEntry = ({
                       />
                     </div>
                   </Form.Item>
-
                   <Form.Item label="Recipe Image">
                     <Tooltip
                       color="#d32f2f"
@@ -310,7 +330,6 @@ const RecipeEntry = ({
                       </Space>
                     ) : null} */}
                   </Form.Item>
-
                   <Form.Item valuePropName="has_made" wrapperCol={{ span: 24 }}>
                     <Checkbox
                       className="mr-[15px]"
@@ -324,7 +343,6 @@ const RecipeEntry = ({
                       onChange={(rating) => setRating(rating)}
                     />
                   </Form.Item>
-
                   <Form.Item
                     label="Recipe Title"
                     name="title"
@@ -340,14 +358,12 @@ const RecipeEntry = ({
                       onChange={(e) => setTitle(e.target.value)}
                     />
                   </Form.Item>
-
                   <Form.Item label="Recipe Author" name="author">
                     <Input
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
                     />
                   </Form.Item>
-
                   <Form.Item label="Recipe Description" name="description">
                     <TextArea
                       value={description}
@@ -355,7 +371,6 @@ const RecipeEntry = ({
                       autoSize={{ minRows: 1, maxRows: 4 }}
                     />
                   </Form.Item>
-
                   <Form.Item label="Recipe Tags" name="tags">
                     <TreeSelect
                       treeData={tagOptions.sort(
@@ -368,7 +383,6 @@ const RecipeEntry = ({
                       placeholder="Please select"
                     />
                   </Form.Item>
-
                   <Form.Item label="Recipe Notes" name="notes">
                     <Tooltip
                       color="#d32f2f"
@@ -383,7 +397,6 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-
                   <Form.Item label="Recipe Ingredients" name="ingredients">
                     <Tooltip
                       color="#d32f2f"
@@ -398,7 +411,6 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-
                   <Form.Item label="Recipe Steps" name="steps">
                     <Tooltip
                       trigger={["focus"]}
@@ -412,7 +424,16 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-
+                  // DELETE THIS
+                  <Form.Item label="Date Picker" name="date">
+                    <DatePicker
+                      format="YYYY-MM-DD HH:mm:ss"
+                      showTime={{
+                        defaultValue: dayjs("00:00:00", "HH:mm:ss"),
+                      }}
+                      onChange={onChange}
+                    />
+                  </Form.Item>
                   <Form.Item wrapperCol={{ span: 24 }}>
                     <Button
                       type="primary"

@@ -37,6 +37,7 @@ export const getCurrentUser = (
   axios
     .get("/api/v1/users/me/")
     .then((response) => {
+      console.log(response.data);
       const user = {
         username: response.data.username,
         email: response.data.email,
