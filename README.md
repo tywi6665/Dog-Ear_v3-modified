@@ -8,6 +8,8 @@
 
 ### Github Repo: [https://github.com/tywi6665/Dog-Ear_v3-modified](https://github.com/tywi6665/Dog-Ear_v3-modified)
 
+### Zyte Project (Scrapy Cloud): [https://app.zyte.com/p/699195/jobs](https://app.zyte.com/p/699195/jobs)
+
 #### Project History:
 
 This is a personal project that I have been working on for some time now. Given the requirements for the final project of this course, and where I was in the development process of Dog-Ear, I thought it a great idea to “kill two birds with one stone” and submit it as my final project.
