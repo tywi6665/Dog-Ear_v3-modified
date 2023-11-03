@@ -7,9 +7,11 @@ export const recipeSlice = createSlice({
   },
   reducers: {
     getRecipe: (state, action) => {
+      action.payload.tags.sort();
       state.recipe = action.payload;
     },
     patchRecipe: (state, action) => {
+      action.payload.tags.sort();
       state.recipe = action.payload;
     },
     clearRecipe: (state) => {

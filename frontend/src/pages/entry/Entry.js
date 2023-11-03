@@ -19,6 +19,7 @@ import {
   DatePicker,
 } from "antd";
 import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
+import SubmitButton from "../../components/SubmitButton";
 // import {
 //   directUploadStart,
 //   directUploadDo,
@@ -67,7 +68,7 @@ const RecipeEntry = ({
   const [hasMade, setHasMade] = useState(false);
   const [rating, setRating] = useState(0);
   // DELETE THIS
-  const [timestamp, setTimestamp] = useState("");
+  const [timestamp, setTimestamp] = useState(moment().utc().format());
   //   const [urlNotNeeded, setUrlNotNeeded] = useState(false);
 
   const user = useSelector((state) => state.login.user.username);
@@ -79,6 +80,7 @@ const RecipeEntry = ({
   const tagOptions = [
     ...useSelector((state) => state.catalog.searchOptions.tags),
   ];
+  console.log(tagOptions);
   const duplicates = useSelector((state) => state.catalog.duplicates);
   const [form] = Form.useForm();
   const { Paragraph, Text } = Typography;
@@ -287,7 +289,16 @@ const RecipeEntry = ({
                   autoComplete="off"
                   onFinish={handleFormSubmit}
                 >
-                  <Form.Item label="Recipe URL" name="url">
+                  <Form.Item
+                    label="Recipe URL"
+                    name="url"
+                    hasFeedback
+                    rules={[
+                      {
+                        max: 1000,
+                      },
+                    ]}
+                  >
                     <div>
                       <Input
                         value={url}
@@ -296,7 +307,15 @@ const RecipeEntry = ({
                       />
                     </div>
                   </Form.Item>
-                  <Form.Item label="Recipe Image">
+                  <Form.Item
+                    label="Recipe Image"
+                    hasFeedback
+                    rules={[
+                      {
+                        max: 1000,
+                      },
+                    ]}
+                  >
                     <Tooltip
                       color="#d32f2f"
                       trigger={["focus"]}
@@ -346,10 +365,11 @@ const RecipeEntry = ({
                   <Form.Item
                     label="Recipe Title"
                     name="title"
+                    hasFeedback
                     rules={[
                       {
+                        max: 1000,
                         required: true,
-                        message: "Please input the recipe's title!",
                       },
                     ]}
                   >
@@ -358,20 +378,33 @@ const RecipeEntry = ({
                       onChange={(e) => setTitle(e.target.value)}
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Author" name="author">
+                  <Form.Item
+                    label="Recipe Author"
+                    name="author"
+                    hasFeedback
+                    rules={[
+                      {
+                        max: 300,
+                      },
+                    ]}
+                  >
                     <Input
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Description" name="description">
+                  <Form.Item
+                    label="Recipe Description"
+                    name="description"
+                    hasFeedback
+                  >
                     <TextArea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       autoSize={{ minRows: 1, maxRows: 4 }}
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Tags" name="tags">
+                  <Form.Item label="Recipe Tags" name="tags" hasFeedback>
                     <TreeSelect
                       treeData={tagOptions.sort(
                         (a, b) => -b.title.localeCompare(a.title)
@@ -383,7 +416,7 @@ const RecipeEntry = ({
                       placeholder="Please select"
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Notes" name="notes">
+                  <Form.Item label="Recipe Notes" name="notes" hasFeedback>
                     <Tooltip
                       color="#d32f2f"
                       trigger={["focus"]}
@@ -397,7 +430,11 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-                  <Form.Item label="Recipe Ingredients" name="ingredients">
+                  <Form.Item
+                    label="Recipe Ingredients"
+                    name="ingredients"
+                    hasFeedback
+                  >
                     <Tooltip
                       color="#d32f2f"
                       trigger={["focus"]}
@@ -411,7 +448,7 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-                  <Form.Item label="Recipe Steps" name="steps">
+                  <Form.Item label="Recipe Steps" name="steps" hasFeedback>
                     <Tooltip
                       trigger={["focus"]}
                       title='Please include a "--" before each heading. Each ingredient and heading needs to be on a new line.'
@@ -435,7 +472,8 @@ const RecipeEntry = ({
                     />
                   </Form.Item>
                   <Form.Item wrapperCol={{ span: 24 }}>
-                    <Button
+                    <SubmitButton form={form} />
+                    {/* <Button
                       type="primary"
                       htmlType="submit"
                       className={title.length ? "btn-active" : "btn"}
@@ -444,7 +482,7 @@ const RecipeEntry = ({
                       block
                     >
                       Create Entry
-                    </Button>
+                    </Button> */}
                   </Form.Item>
                 </Form>
               </Space>

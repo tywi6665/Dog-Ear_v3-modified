@@ -19,7 +19,6 @@ export const catalogSlice = createSlice({
       state.hasRetrievedData = true;
     },
     addRecipe: (state, action) => {
-      console.log(action.payload);
       state.recipes = [...state.recipes, action.payload];
     },
     getSearchOptions: (state, action) => {
@@ -28,8 +27,10 @@ export const catalogSlice = createSlice({
         tags: [],
         allOptions: [],
       };
+
       recipes.forEach((recipe) => {
         let tags = recipe.tags;
+
         let cleanedTitle = recipe.title.trim();
         tags.forEach((tag) => {
           if (tag.length) {
@@ -46,16 +47,21 @@ export const catalogSlice = createSlice({
           arr.allOptions.push(cleanedTitle);
         }
       });
+
       let options = arr.tags.map((option) => {
         if (option.length) {
           // const firstLetter = option[0].toUpperCase();
-          option = option.split(" ").map(function (word) {
-            return word.replace(word[0], word[0].toUpperCase());
-          });
+          option = option
+            .split(" ")
+            .map(function (word) {
+              return word.replace(word[0], word[0].toUpperCase());
+            })
+            .join(" ")
+            .trim();
           return {
-            title: option[0],
-            key: option[0],
-            value: option[0],
+            title: option,
+            key: option,
+            value: option,
           };
         }
       });
