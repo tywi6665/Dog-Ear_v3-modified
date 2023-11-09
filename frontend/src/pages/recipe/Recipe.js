@@ -34,6 +34,7 @@ import {
   LinkOutlined,
 } from "@ant-design/icons";
 import { titleCase } from "../../utils";
+import parse, { domToReact } from "html-react-parser";
 // import { parse } from "recipe-ingredient-parser-v3";
 
 const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
@@ -345,7 +346,23 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                         recipe.description.split("\n").map((paragraph) => {
                           if (paragraph.length) {
                             return (
-                              <Paragraph key={uuidv4()}>{paragraph}</Paragraph>
+                              <Paragraph key={uuidv4()}>
+                                {parse(paragraph, {
+                                  replace({ domNode, attribs, children }) {
+                                    if (!attribs) {
+                                      return;
+                                    }
+                                    console.log(domNode, attribs);
+                                    if (attribs.href) {
+                                      return (
+                                        <a href={attribs.href} target="_blank">
+                                          {domToReact(children)}
+                                        </a>
+                                      );
+                                    }
+                                  },
+                                })}
+                              </Paragraph>
                             );
                           }
                         })

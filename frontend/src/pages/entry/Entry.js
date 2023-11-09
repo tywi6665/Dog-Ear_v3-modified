@@ -80,7 +80,6 @@ const RecipeEntry = ({
   const tagOptions = [
     ...useSelector((state) => state.catalog.searchOptions.tags),
   ];
-  console.log(tagOptions);
   const duplicates = useSelector((state) => state.catalog.duplicates);
   const [form] = Form.useForm();
   const { Paragraph, Text } = Typography;
