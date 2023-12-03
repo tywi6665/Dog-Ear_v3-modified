@@ -27,19 +27,22 @@ import {
   EditOutlined,
   DeleteOutlined,
   PlusOutlined,
+  MinusCircleOutlined,
   ExclamationCircleFilled,
   SettingOutlined,
   ArrowLeftOutlined,
   CheckOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
-import { titleCase } from "../../utils";
+import { titleCase, testJSON } from "../../utils";
 import parse, { domToReact } from "html-react-parser";
 // import { parse } from "recipe-ingredient-parser-v3";
 
 const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   const recipe = useSelector((state) => state.recipe.recipe);
   const [inputVisible, setInputVisible] = useState(false);
+  const [addNoteVisible, setAddNoteVisible] = useState(false);
+  const [addNoteSubmittable, setAddNoteSubmittable] = useState(false);
   const [tagForm] = Form.useForm();
   const [noteForm] = Form.useForm();
   let tagFormValue = Form.useWatch("newTag", tagForm);
@@ -53,6 +56,44 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   useEffect(() => {
     get_Recipe(id, dispatch, displayMessage);
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(recipe).length) {
+      if (recipe.notes.length && typeof recipe.notes[0] === "string") {
+        const notesJSON = [];
+        recipe.notes.forEach((note) => {
+          if (moment(note.split(":")[0]).isValid()) {
+            notesJSON.push({
+              date: note.split(":")[0],
+              text: note.split(":")[1].trim(),
+            });
+          } else {
+            notesJSON.push({
+              date: "",
+              text: note.trim(),
+            });
+          }
+        });
+        console.log(notesJSON);
+        patch_Recipe(recipe.id, { notes: notesJSON }, dispatch, displayMessage);
+      }
+    }
+  }, [recipe]);
+
+  React.useEffect(() => {
+    noteForm
+      .validateFields({
+        validateOnly: true,
+      })
+      .then(
+        () => {
+          setAddNoteSubmittable(true);
+        },
+        () => {
+          setAddNoteSubmittable(false);
+        }
+      );
+  }, [noteFormValue]);
 
   // Tab Functions
   const changeTab = (key) => {
@@ -120,15 +161,18 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
     setInputVisible(true);
   };
 
-  const addNote = (newNote) => {
-    if (noteFormValue) {
+  const addNote = () => {
+    let trimmedValue = noteFormValue[0].newNote.trim();
+    const timestamp = moment().format("MM/DD/YYYY");
+    if (trimmedValue.length) {
       patch_Recipe(
         recipe.id,
-        { notes: [...recipe.notes, newNote] },
+        { notes: [...recipe.notes, { date: timestamp, text: trimmedValue }] },
         dispatch,
         displayMessage
       );
       noteForm.resetFields();
+      setAddNoteVisible(false);
     }
   };
 
@@ -352,7 +396,6 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                                     if (!attribs) {
                                       return;
                                     }
-                                    console.log(domNode, attribs);
                                     if (attribs.href) {
                                       return (
                                         <a href={attribs.href} target="_blank">
@@ -445,13 +488,13 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                             </Text>
                           </Divider>
                           <Form
-                            className="flex flex-between mb-5"
+                            className="mb-5"
                             name="new-notes-form"
                             form={noteForm}
                             autoComplete="off"
                             onFinish={(value) => addNote(value.newNote)}
                           >
-                            <Form.Item className="w-full" name="newNote">
+                            {/* <Form.Item className="w-full" name="newNote">
                               <Input.TextArea
                                 className="rounded-r-none"
                                 placeholder="Add a new note"
@@ -468,14 +511,85 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                               >
                                 Add
                               </Button>
-                            </Form.Item>
+                            </Form.Item> */}
+                            <Form.List name="newNote">
+                              {(fields, { add, remove }) => (
+                                <>
+                                  {fields.map(({ key, name, ...restField }) => (
+                                    <div
+                                      key={key}
+                                      className="flex justify-center items-center gap-2 mb-2.5"
+                                    >
+                                      <Form.Item
+                                        {...restField}
+                                        name={[name, "newNote"]}
+                                        rules={[
+                                          {
+                                            required: true,
+                                            message: "Please leave a note",
+                                          },
+                                        ]}
+                                        className="w-full m-0"
+                                      >
+                                        <Input.TextArea
+                                          className="rounded w-full"
+                                          placeholder="Add a new note"
+                                          allowClear
+                                          autoSize
+                                        />
+                                      </Form.Item>
+                                      <MinusCircleOutlined
+                                        onClick={() => [
+                                          remove(name),
+                                          setAddNoteVisible(false),
+                                        ]}
+                                      />
+                                    </div>
+                                  ))}
+                                  <Form.Item>
+                                    {addNoteVisible ? (
+                                      <Button
+                                        className="h-full btn-active rounded"
+                                        htmlType="submit"
+                                        type="primary"
+                                        disabled={!addNoteSubmittable}
+                                        block
+                                      >
+                                        Submit
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        type="dashed"
+                                        className="border-[#d32f2f] hover:!border-[#d32f2f]"
+                                        onClick={() => [
+                                          add(),
+                                          setAddNoteVisible(true),
+                                        ]}
+                                        block
+                                        icon={<PlusOutlined />}
+                                      >
+                                        Add New Note
+                                      </Button>
+                                    )}
+                                  </Form.Item>
+                                </>
+                              )}
+                            </Form.List>
                           </Form>
                           <Timeline>
-                            {recipe.notes.length > 0 ? (
+                            {(recipe.notes.length &&
+                              typeof recipe.notes[0] === "object") > 0 ? (
                               recipe.notes.map((note) => {
                                 return (
                                   <Timeline.Item color="#d32f2f" key={uuidv4()}>
-                                    <Text>{note}</Text>
+                                    <Text>
+                                      {note.date.length ? (
+                                        <em>
+                                          <strong>{note.date}:&nbsp;</strong>
+                                        </em>
+                                      ) : null}
+                                      {note.text}
+                                    </Text>
                                   </Timeline.Item>
                                 );
                               })

@@ -53,11 +53,11 @@ const Catalog = RequireAuth(({ dispatch, displayMessage }) => {
   );
 
   useEffect(() => {
-    get_Recipes(dispatch, sortBy, displayMessage);
+    get_Recipes(dispatch, sortBy, searchQuery, displayMessage);
     clear_Recipe(dispatch);
-    if (searchQuery) {
-      set_SearchQuery("", dispatch);
-    }
+    // if (searchQuery) {
+    //   set_SearchQuery(searchQuery, dispatch);
+    // }
   }, [recipes.length, sortBy]);
 
   const handleAddRecipe = (recipe) => {

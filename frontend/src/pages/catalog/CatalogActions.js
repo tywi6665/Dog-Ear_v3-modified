@@ -9,7 +9,7 @@ import {
   // setRetrievedData,
 } from "../../reducers/catalogSlice";
 
-export const get_Recipes = (dispatch, sortBy, displayMessage) => {
+export const get_Recipes = (dispatch, sortBy, searchQuery, displayMessage) => {
   let url = "";
   if (sortBy === "-timestamp" || sortBy === "timestamp") {
     url = `/api/v1/recipes/?ordering=${sortBy}`;
@@ -21,6 +21,9 @@ export const get_Recipes = (dispatch, sortBy, displayMessage) => {
     .then((res) => {
       dispatch(getRecipes(res.data));
       get_SearchOptions(res.data, dispatch);
+      if (searchQuery) {
+        set_SearchQuery(searchQuery, dispatch);
+      }
       // dispatch(setRetrievedData(true));
     })
     .catch((error) => {

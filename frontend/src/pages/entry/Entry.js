@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import moment from "moment";
 import { connect, disconnect, set_pastedUrl } from "./EntryActions";
 import { get_Duplicates } from "../catalog/CatalogActions";
 import {
@@ -16,7 +17,7 @@ import {
   List,
   Avatar,
   Typography,
-  DatePicker,
+  Spin,
 } from "antd";
 import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
 import SubmitButton from "../../components/SubmitButton";
@@ -25,11 +26,11 @@ import SubmitButton from "../../components/SubmitButton";
 //   directUploadDo,
 //   directUploadFinish,
 // } from "../../utils/upload";
-import { UploadOutlined } from "@ant-design/icons";
-
-// DELETE THIS
-import moment from "moment";
-import dayjs from "dayjs";
+import {
+  LoadingOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
 const RecipeEntry = ({
   //   recipe,
@@ -67,8 +68,6 @@ const RecipeEntry = ({
   const [steps, setSteps] = useState("");
   const [hasMade, setHasMade] = useState(false);
   const [rating, setRating] = useState(0);
-  // DELETE THIS
-  const [timestamp, setTimestamp] = useState(moment().utc().format());
   //   const [urlNotNeeded, setUrlNotNeeded] = useState(false);
 
   const user = useSelector((state) => state.login.user.username);
@@ -130,6 +129,17 @@ const RecipeEntry = ({
   // };
 
   const handleFormSubmit = () => {
+    let newNotes = [...allNotes];
+
+    if (newNotes.length > 0) {
+      newNotes = newNotes.filter((note) => note.text.length > 0);
+      newNotes.forEach((note) => {
+        return note.text.trim();
+      });
+    } else {
+      newNotes = [];
+    }
+
     const recipe = {
       url: url,
       img_src: imgSrc,
@@ -137,13 +147,11 @@ const RecipeEntry = ({
       author: titleCase(author),
       description: description,
       tags: titleCaseArr(tags),
-      notes: allNotes,
+      notes: newNotes,
       has_made: hasMade,
       rating: rating,
       ingredients: parseIngredients(ingredients),
       steps: parseIngredients(steps),
-      // DELETE THIS
-      timestamp: timestamp,
     };
     handleAddRecipe(recipe);
     disconnect(
@@ -156,16 +164,25 @@ const RecipeEntry = ({
     );
   };
 
-  // DELETE THIS
-  const onChange = (date) => {
-    if (date) {
-      // YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]
-      console.log("Date: ", moment(date.$d).utc().format());
-      // setTimestamp(dayjs(date.$d).format("YYYY-MM-DD HH:mm:ss"));
-      setTimestamp(moment(date.$d).utc().format());
-    } else {
-      console.log("Clear");
-    }
+  const removeNote = (i) => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy[i].text = "";
+    setAllNotes(copy);
+  };
+
+  const addNote = () => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy.push({
+      date: moment().format("MM/DD/YYYY"),
+      text: "",
+    });
+    setAllNotes(copy);
+  };
+
+  const updateNote = (i, value) => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy[i].text = value;
+    setAllNotes(copy);
   };
 
   // useEffect(() => {
@@ -236,6 +253,7 @@ const RecipeEntry = ({
       open={isModalOpen}
       onCancel={() => [
         closeModal(),
+        console.log("here"),
         get_Duplicates("", dispatch),
         disconnect(
           entryType,
@@ -415,7 +433,8 @@ const RecipeEntry = ({
                       placeholder="Please select"
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Notes" name="notes" hasFeedback>
+
+                  {/* <Form.Item label="Recipe Notes" name="notes" hasFeedback>
                     <Tooltip
                       color="#d32f2f"
                       trigger={["focus"]}
@@ -428,7 +447,52 @@ const RecipeEntry = ({
                         autoSize
                       />
                     </Tooltip>
+                  </Form.Item> */}
+
+                  <Form.Item label="Recipe Notes">
+                    <Form.List name="notes">
+                      {(fields, { add, remove }) => (
+                        <>
+                          {fields.map(({ key, name, ...restField }) => (
+                            <div
+                              key={key}
+                              className="flex justify-center items-center gap-2 mb-2.5"
+                            >
+                              <Form.Item
+                                {...restField}
+                                name={[name, "text"]}
+                                className="w-full m-0"
+                                onChange={(e) =>
+                                  updateNote(key, e.target.value)
+                                }
+                              >
+                                <Input.TextArea
+                                  className="rounded w-full"
+                                  placeholder="Add a new note"
+                                  allowClear
+                                  autoSize
+                                  defaultValue={allNotes[key].text}
+                                />
+                              </Form.Item>
+                              <MinusCircleOutlined
+                                onClick={() => [removeNote(name), remove(name)]}
+                              />
+                            </div>
+                          ))}
+                          <Form.Item className="mb-0">
+                            <Button
+                              onClick={() => [addNote(), add()]}
+                              block
+                              icon={<PlusOutlined />}
+                            >
+                              Add New Note
+                            </Button>
+                          </Form.Item>
+                        </>
+                      )}
+                    </Form.List>
                   </Form.Item>
+
                   <Form.Item
                     label="Recipe Ingredients"
                     name="ingredients"
@@ -460,16 +524,6 @@ const RecipeEntry = ({
                       />
                     </Tooltip>
                   </Form.Item>
-                  // DELETE THIS
-                  <Form.Item label="Date Picker" name="date">
-                    <DatePicker
-                      format="YYYY-MM-DD HH:mm:ss"
-                      showTime={{
-                        defaultValue: dayjs("00:00:00", "HH:mm:ss"),
-                      }}
-                      onChange={onChange}
-                    />
-                  </Form.Item>
                   <Form.Item wrapperCol={{ span: 24 }}>
                     <SubmitButton form={form} />
                     {/* <Button
@@ -500,9 +554,19 @@ const RecipeEntry = ({
                   src="/static/graphics/dog-body-md.png"
                 />
               </div>
-              <p className="text-center">
-                <em>Fetching deliciousness...</em>
-              </p>
+              <div className="text-center">
+                <em>Fetching deliciousness </em>
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{
+                        fontSize: 24,
+                      }}
+                      spin
+                    />
+                  }
+                />
+              </div>
             </>
           )}
         </div>

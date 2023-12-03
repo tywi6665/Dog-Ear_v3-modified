@@ -89,3 +89,15 @@ export const parseIngredients = (ingredients) => {
 
   return JSON.stringify(parsedIngredients);
 };
+
+export const testJSON = (text) => {
+  if (typeof text !== "string") {
+    return false;
+  }
+  try {
+    JSON.parse(text);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};

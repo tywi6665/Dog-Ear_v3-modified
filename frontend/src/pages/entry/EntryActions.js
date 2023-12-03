@@ -135,7 +135,7 @@ async function checkScrapeStatus(task_id, unique_id, url, user, dispatch) {
           dispatch
         );
       } else if (response.status) {
-        set_ScrapingStatus(response.status, dispatch);
+        set_ScrapingStatus("Pending", dispatch);
       }
     });
 }

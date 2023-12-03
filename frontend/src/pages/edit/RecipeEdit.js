@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RequireAuth from "../../utils/RequireAuth";
-import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { update_Recipe } from "./RecipeEditActions";
@@ -22,7 +22,11 @@ import {
   Tooltip,
   Spin,
 } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
 const RecipeEdit = RequireAuth(({ displayMessage }) => {
   const recipe = useSelector((state) => state.recipe.recipe);
@@ -46,6 +50,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
   const [steps, setSteps] = useState(flattenIntoString(recipe.steps));
 
   const [form] = Form.useForm();
+  // const newNotes = Form.useWatch("notes", { form });
   const { Content } = Layout;
   const { TextArea } = Input;
 
@@ -66,14 +71,15 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
   }, [recipe]);
 
   const updateRecipe = () => {
-    let notes = [...allNotes];
+    let newNotes = [...allNotes];
 
-    if (notes.length > 0) {
-      notes = notes.map((note) => {
-        return note.trim();
+    if (newNotes.length > 0) {
+      newNotes = newNotes.filter((note) => note.text.length > 0);
+      newNotes.forEach((note) => {
+        return note.text.trim();
       });
     } else {
-      notes = [];
+      newNotes = [];
     }
 
     const updatedRecipe = {
@@ -83,7 +89,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
       author: titleCase(author),
       description: description,
       tags: titleCaseArr(tags),
-      notes: allNotes,
+      notes: newNotes,
       has_made: hasMade,
       rating: rating,
       ingredients: parseIngredients(ingredients),
@@ -91,6 +97,27 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
     };
 
     update_Recipe(recipe.id, updatedRecipe, navigate, displayMessage);
+  };
+
+  const removeNote = (i) => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy[i].text = "";
+    setAllNotes(copy);
+  };
+
+  const addNote = () => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy.push({
+      date: moment().format("MM/DD/YYYY"),
+      text: "",
+    });
+    setAllNotes(copy);
+  };
+
+  const updateNote = (i, value) => {
+    let copy = JSON.parse(JSON.stringify([...allNotes]));
+    copy[i].text = value;
+    setAllNotes(copy);
   };
 
   return Object.keys(recipe).length ? (
@@ -206,7 +233,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
           />
         </Form.Item>
 
-        <Form.Item label="Recipe Notes" name="notes">
+        {/* <Form.Item label="Recipe Notes" name="notes">
           <Tooltip
             color="#d32f2f"
             trigger={["focus"]}
@@ -220,6 +247,48 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
               allowClear
             />
           </Tooltip>
+        </Form.Item> */}
+
+        <Form.Item label="Recipe Notes">
+          <Form.List name="notes">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <div
+                    key={key}
+                    className="flex justify-center items-center gap-2 mb-2.5"
+                  >
+                    <Form.Item
+                      {...restField}
+                      name={[name, "text"]}
+                      className="w-full m-0"
+                      onChange={(e) => updateNote(key, e.target.value)}
+                    >
+                      <Input.TextArea
+                        className="rounded w-full"
+                        placeholder="Add a new note"
+                        allowClear
+                        autoSize
+                        defaultValue={allNotes[key].text}
+                      />
+                    </Form.Item>
+                    <MinusCircleOutlined
+                      onClick={() => [removeNote(name), remove(name)]}
+                    />
+                  </div>
+                ))}
+                <Form.Item className="mb-0">
+                  <Button
+                    onClick={() => [addNote(), add()]}
+                    block
+                    icon={<PlusOutlined />}
+                  >
+                    Add New Note
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
         </Form.Item>
 
         <Form.Item label="Recipe Ingredients" name="ingredients">

@@ -1,6 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Fuse from "fuse.js";
 
+const isValidUrl = (urlString) => {
+  try {
+    return Boolean(new URL(urlString));
+  } catch (e) {
+    return false;
+  }
+};
+
 export const catalogSlice = createSlice({
   name: "catalog",
   initialState: {
@@ -101,20 +109,24 @@ export const catalogSlice = createSlice({
       }
     },
     getDuplicates: (state, action) => {
-      let url = action.payload;
-      const options = {
-        keys: ["url"],
-        includeScore: true,
-        includeMatches: true,
-        minMatchCharLength: 2,
-        findAllMatches: true,
-        ignoreLocation: true,
-      };
-      if (url.length & (state.recipes !== null)) {
-        const fuse = new Fuse(state.recipes, options);
-        let result = fuse.search(url);
-        result = result.filter((el) => el.score <= 0.25).map((el) => el.item);
-        state.duplicates = result;
+      if (isValidUrl(action.payload)) {
+        let url = new URL(action.payload).pathname;
+        const options = {
+          keys: ["url"],
+          includeScore: true,
+          includeMatches: true,
+          minMatchCharLength: 2,
+          findAllMatches: true,
+          ignoreLocation: true,
+        };
+        if (url.length && state.recipes !== null) {
+          const fuse = new Fuse(state.recipes, options);
+          let result = fuse.search(url);
+          result = result.filter((el) => el.score <= 0.25).map((el) => el.item);
+          state.duplicates = result;
+        } else {
+          state.duplicates = [];
+        }
       } else {
         state.duplicates = [];
       }

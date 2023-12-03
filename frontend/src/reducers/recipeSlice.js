@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { testJSON } from "../utils";
 
 export const recipeSlice = createSlice({
   name: "recipe",
@@ -8,6 +9,12 @@ export const recipeSlice = createSlice({
   reducers: {
     getRecipe: (state, action) => {
       action.payload.tags.sort();
+      // let copy = { ...action.payload };
+      // testJSON(copy.notes);
+      // if (testJSON(copy.notes)) {
+      //   copy.notes = JSON.parse(copy.notes);
+      // }
+      // console.log(copy);
       state.recipe = action.payload;
     },
     patchRecipe: (state, action) => {
