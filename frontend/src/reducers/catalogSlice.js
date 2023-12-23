@@ -56,6 +56,8 @@ export const catalogSlice = createSlice({
         }
       });
 
+      arr.tags.sort();
+
       let options = arr.tags.map((option) => {
         if (option.length) {
           // const firstLetter = option[0].toUpperCase();
@@ -73,6 +75,7 @@ export const catalogSlice = createSlice({
           };
         }
       });
+
       arr.tags = options;
       arr.allOptions.sort();
       state.searchOptions = arr;

@@ -28,6 +28,7 @@ import Metrics from "./pages/metrics/Metrics";
 import NotFoundPage from "./components/NotFoundPage";
 import ErrorPage from "./components/ErrorPage";
 import { useWakeLock } from "react-screen-wake-lock";
+import { get_Recipes } from "./pages/catalog/CatalogActions";
 
 if (window.location.origin === "http://localhost:3000") {
   axios.defaults.baseURL = "http://localhost:3000";
@@ -83,6 +84,7 @@ const App = () => {
         redirectTo = location.pathname;
       }
       set_CurrentUser(user, redirectTo, navigate, dispatch);
+      get_Recipes(dispatch, "-timestamp", "", displayMessage);
     } else {
       if (
         activateMatch ||

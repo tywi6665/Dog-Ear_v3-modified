@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { connect, disconnect, set_pastedUrl } from "./EntryActions";
@@ -13,11 +13,12 @@ import {
   TreeSelect,
   Rate,
   Tooltip,
-  Upload,
   List,
   Avatar,
   Typography,
   Spin,
+  Select,
+  Divider,
 } from "antd";
 import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
 import SubmitButton from "../../components/SubmitButton";
@@ -33,21 +34,14 @@ import {
 } from "@ant-design/icons";
 
 const RecipeEntry = ({
-  //   recipe,
-  //   unique_id,
-  //   url,
-  //   setRecipe,
   dispatch,
   displayMessage,
   isModalOpen,
   closeModal,
   handleAddRecipe,
-  //   setUrl,
-  //   handleCreate,
-  //   // handleImageUpload,
-  //   // handleImageDelete,
+  // handleImageUpload,
+  // handleImageDelete,
   //   handleDelete,
-  //   quickTagOptions,
   entryType,
   setEntryType,
   isSubmitted,
@@ -57,29 +51,31 @@ const RecipeEntry = ({
   // imageName,
   // setImageName,
 }) => {
+  const pastedUrl = useSelector((state) => state.scrapedRecipe.url);
+  const hadError = useSelector((state) => state.scrapedRecipe.hadError);
+  const searchOptions = useSelector((state) => state.catalog.searchOptions);
+
+  const duplicates = useSelector((state) => state.catalog.duplicates);
+  const user = useSelector((state) => state.login.user.username);
+  const scrapedRecipe = useSelector(
+    (state) => state.scrapedRecipe.scrapedRecipe
+  );
+
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [imgSrc, setImgSrc] = useState("");
   const [description, setDescription] = useState("");
   const [author, setAuthor] = useState("");
+  const [tagOptions, setTagOptions] = useState([...searchOptions.tags]);
+  const [newTag, setNewTag] = useState("");
   const [tags, setTags] = useState([]);
   const [allNotes, setAllNotes] = useState([]);
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
   const [hasMade, setHasMade] = useState(false);
   const [rating, setRating] = useState(0);
-  //   const [urlNotNeeded, setUrlNotNeeded] = useState(false);
 
-  const user = useSelector((state) => state.login.user.username);
-  const scrapedRecipe = useSelector(
-    (state) => state.scrapedRecipe.scrapedRecipe
-  );
-  const pastedUrl = useSelector((state) => state.scrapedRecipe.url);
-  const hadError = useSelector((state) => state.scrapedRecipe.hadError);
-  const tagOptions = [
-    ...useSelector((state) => state.catalog.searchOptions.tags),
-  ];
-  const duplicates = useSelector((state) => state.catalog.duplicates);
+  const inputRef = useRef(null);
   const [form] = Form.useForm();
   const { Paragraph, Text } = Typography;
   const { TextArea } = Input;
@@ -146,7 +142,7 @@ const RecipeEntry = ({
       title: titleCase(title),
       author: titleCase(author),
       description: description,
-      tags: titleCaseArr(tags),
+      tags: titleCaseArr(tags.sort()),
       notes: newNotes,
       has_made: hasMade,
       rating: rating,
@@ -183,6 +179,35 @@ const RecipeEntry = ({
     let copy = JSON.parse(JSON.stringify([...allNotes]));
     copy[i].text = value;
     setAllNotes(copy);
+  };
+
+  const addItem = (e) => {
+    e.preventDefault();
+    const newTagTrimmed = titleCase(newTag.trim());
+    const isPresent = tagOptions.map((tag) => tag.value).indexOf(newTagTrimmed);
+    if (newTagTrimmed.length && isPresent === -1) {
+      const sorted = [
+        ...tagOptions,
+        {
+          title: newTagTrimmed,
+          key: newTagTrimmed,
+          value: newTagTrimmed,
+        },
+      ].sort((a, b) => -b.title.localeCompare(a.title));
+      setTagOptions(sorted);
+    } else if (!newTagTrimmed.length) {
+      displayMessage("Please write a tag", "error");
+    } else if (isPresent >= 0) {
+      displayMessage(
+        `The tag ${titleCase(newTagTrimmed)} is already exists`,
+        "error"
+      );
+    }
+
+    setNewTag("");
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   // useEffect(() => {
@@ -421,7 +446,8 @@ const RecipeEntry = ({
                       autoSize={{ minRows: 1, maxRows: 4 }}
                     />
                   </Form.Item>
-                  <Form.Item label="Recipe Tags" name="tags" hasFeedback>
+
+                  {/* <Form.Item label="Recipe Tags" name="tags" hasFeedback>
                     <TreeSelect
                       treeData={tagOptions.sort(
                         (a, b) => -b.title.localeCompare(a.title)
@@ -432,22 +458,55 @@ const RecipeEntry = ({
                       treeCheckable
                       placeholder="Please select"
                     />
-                  </Form.Item>
-
-                  {/* <Form.Item label="Recipe Notes" name="notes" hasFeedback>
-                    <Tooltip
-                      color="#d32f2f"
-                      trigger={["focus"]}
-                      title="Delimit separate notes with ; "
-                      placement="top"
-                    >
-                      <TextArea
-                        value={allNotes.join(";")}
-                        onChange={(e) => setAllNotes(e.target.value.split(";"))}
-                        autoSize
-                      />
-                    </Tooltip>
                   </Form.Item> */}
+
+                  <Form.Item
+                    label="Recipe Tags"
+                    name="tags"
+                    wrapperCol={{ span: 24 }}
+                  >
+                    <Select
+                      className="w-full"
+                      mode="multiple"
+                      allowClear
+                      placeholder="Add tags"
+                      onChange={(value) => setTags(value)}
+                      dropdownRender={(menu) => (
+                        <>
+                          {menu}
+                          <Divider
+                            style={{
+                              margin: "8px 0",
+                            }}
+                          />
+                          <Space
+                            style={{
+                              padding: "0 8px 4px",
+                            }}
+                          >
+                            <Input
+                              placeholder="Add new tag"
+                              ref={inputRef}
+                              value={newTag}
+                              onChange={(e) => setNewTag(e.target.value)}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                            <Button
+                              type="text"
+                              icon={<PlusOutlined />}
+                              onClick={addItem}
+                            >
+                              Add tag
+                            </Button>
+                          </Space>
+                        </>
+                      )}
+                      options={tagOptions.map((tag) => ({
+                        label: tag.title,
+                        value: tag.value,
+                      }))}
+                    />
+                  </Form.Item>
 
                   <Form.Item label="Recipe Notes">
                     <Form.List name="notes">
@@ -471,7 +530,7 @@ const RecipeEntry = ({
                                   placeholder="Add a new note"
                                   allowClear
                                   autoSize
-                                  defaultValue={allNotes[key].text}
+                                  initialValues={allNotes[key].text}
                                 />
                               </Form.Item>
                               <MinusCircleOutlined

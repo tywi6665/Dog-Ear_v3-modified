@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import RequireAuth from "../../utils/RequireAuth";
 import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { get_Recipe, patch_Recipe, delete_Recipe } from "./RecipeActions";
 import {
+  Select,
   Layout,
   Space,
   Typography,
@@ -39,8 +40,14 @@ import parse, { domToReact } from "html-react-parser";
 // import { parse } from "recipe-ingredient-parser-v3";
 
 const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
+  const catalog = useSelector((state) => state.catalog);
+  const searchOptions = useSelector((state) => state.catalog.searchOptions);
   const recipe = useSelector((state) => state.recipe.recipe);
-  const [inputVisible, setInputVisible] = useState(false);
+  // const [inputVisible, setInputVisible] = useState(false);
+  const [allTags, setAllTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
+  const [addTagVisible, setAddTagVisible] = useState(false);
+  const [addTagSubmittable, setAddTagSubmittable] = useState(false);
   const [addNoteVisible, setAddNoteVisible] = useState(false);
   const [addNoteSubmittable, setAddNoteSubmittable] = useState(false);
   const [tagForm] = Form.useForm();
@@ -50,12 +57,20 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   let { id } = useParams();
   const navigate = useNavigate();
   const { Title, Paragraph, Text, Link } = Typography;
-  const { Header, Content } = Layout;
+  const { Content } = Layout;
   const { confirm } = Modal;
+
+  const inputRef = useRef(null);
 
   useEffect(() => {
     get_Recipe(id, dispatch, displayMessage);
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(catalog).length) {
+      setAllTags(searchOptions.tags);
+    }
+  }, [catalog]);
 
   useEffect(() => {
     if (Object.keys(recipe).length) {
@@ -74,13 +89,12 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
             });
           }
         });
-        console.log(notesJSON);
         patch_Recipe(recipe.id, { notes: notesJSON }, dispatch, displayMessage);
       }
     }
   }, [recipe]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     noteForm
       .validateFields({
         validateOnly: true,
@@ -94,6 +108,23 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
         }
       );
   }, [noteFormValue]);
+
+  useEffect(() => {
+    if (tagFormValue) {
+      if (tagFormValue.length && tagFormValue[0]) {
+        if (tagFormValue[0].newTag.length) {
+          setAddTagSubmittable(true);
+          console.log(tagFormValue);
+        } else {
+          setAddTagSubmittable(false);
+        }
+      } else {
+        setAddTagSubmittable(false);
+      }
+    } else {
+      setAddTagSubmittable(false);
+    }
+  }, [tagFormValue]);
 
   // Tab Functions
   const changeTab = (key) => {
@@ -143,23 +174,73 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
     onClick: handleMenuClick,
   };
 
-  const handleInputConfirm = (newTag) => {
-    if (recipe.tags.indexOf(titleCase(newTag)) === -1) {
+  const addTags = (newTags) => {
+    const isPresent = newTags.map((tag) => recipe.tags.indexOf(titleCase(tag)));
+    const recipeTagsCopy = [...recipe.tags];
+    const validTags = [];
+    isPresent.forEach((tagIndex, i) => {
+      if (tagIndex === -1) {
+        validTags.push(newTags[i]);
+        recipeTagsCopy.push(titleCase(newTags[i]));
+      } else {
+        displayMessage(
+          `This recipe already has the ${newTags[i]} tag`,
+          "error"
+        );
+      }
+    });
+    if (validTags.length) {
       patch_Recipe(
         recipe.id,
-        { tags: [...recipe.tags, titleCase(newTag)] },
+        { tags: recipeTagsCopy },
         dispatch,
         displayMessage
       );
-      setInputVisible(false);
+      setAddTagVisible(false);
+      setAddTagSubmittable(false);
     } else {
-      displayMessage(`This recipe already has the ${newTag} tag`, "error");
+      setAddTagVisible(false);
+      setAddTagSubmittable(false);
     }
   };
 
-  const showInput = () => {
-    setInputVisible(true);
+  const addItem = (e) => {
+    e.preventDefault();
+    const newTagTrimmed = titleCase(newTag.trim());
+    const isPresent = allTags.map((tag) => tag.value).indexOf(newTagTrimmed);
+    if (newTagTrimmed.length && isPresent === -1) {
+      const sorted = [
+        ...allTags,
+        {
+          title: newTagTrimmed,
+          key: newTagTrimmed,
+          value: newTagTrimmed,
+        },
+      ].sort((a, b) => -b.title.localeCompare(a.title));
+      setAllTags(sorted);
+      // let tagFormValueCopy = [
+      //   ...tagFormValue[0].newTag,
+      //   titleCase(newTagTrimmed),
+      // ];
+      // tagFormValue[0].newTag = tagFormValueCopy;
+    } else if (!newTagTrimmed.length) {
+      displayMessage("Please write a tag", "error");
+    } else if (isPresent >= 0) {
+      displayMessage(
+        `The tag ${titleCase(newTagTrimmed)} is already exists`,
+        "error"
+      );
+    }
+
+    setNewTag("");
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
+
+  // const showInput = () => {
+  //   setInputVisible(true);
+  // };
 
   const addNote = () => {
     let trimmedValue = noteFormValue[0].newNote.trim();
@@ -244,34 +325,6 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                 >
                   <ArrowLeftOutlined />
                 </Button>
-                {/* <div className="recipe-div"> */}
-                {/* <div className="recipe-div-actions"> */}
-
-                {/* <Radio.Group style={{ width: "100%", textAlign: "center" }}>
-              <Popconfirm
-                key="delete"
-                icon={<QuestionCircleOutlined style={{ color: "red" }} />}
-                title="Are you sure??"
-                okText="Delete"
-                okType="danger"
-                placement="bottom"
-                // onConfirm={() => (
-                // handleDelete(recipe.unique_id, "recipes"),
-                // onClose()
-                // )}
-              >
-                <Radio.Button style={{ width: "50%" }} className="btn">
-                  <DeleteOutlined />
-                </Radio.Button>
-              </Popconfirm>
-              <Radio.Button
-                style={{ width: "50%" }}
-                // onClick={() => setIsEditing(true)}
-              >
-                <EditOutlined key="edit" />
-              </Radio.Button>
-            </Radio.Group> */}
-                {/* </div> */}
                 <img
                   className="w-full max-w-full max-h-[550px] object-center object-cover"
                   src={
@@ -280,11 +333,11 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                       : "/static/graphics/default_image.jpg"
                   }
                 />
-                <div className="absolute top-[40%] bottom-0 inset-0 bg-gradient-to-b from-transparent to-[#f5f5f5]"></div>
+                <div className="absolute top-[30%] bottom-0 inset-0 bg-gradient-to-b from-transparent to-[#f5f5f5]"></div>
                 {/* </div> */}
               </Col>
             </Row>
-            <Row className="w-full -mt-10">
+            <Row className="w-full -mt-20">
               <Col span={20} offset={2}>
                 <Title level={3} className="text-center mb-0">
                   {recipe.title}
@@ -440,19 +493,19 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                               <em>This recipe has not been tagged yet</em>
                             </p>
                           )}
-                          {inputVisible && (
-                            <Form
-                              name="new-tag-form"
-                              form={tagForm}
-                              className="flex"
-                              onFinish={(value) => (
-                                value.newTag
-                                  ? handleInputConfirm(value.newTag.trim())
-                                  : null,
-                                tagForm.resetFields()
-                              )}
-                            >
-                              <Form.Item name="newTag">
+                          {/* {inputVisible && ( */}
+                          <Form
+                            name="new-tag-form"
+                            form={tagForm}
+                            className="flex flex-col mt-2.5"
+                            onFinish={(value) => (
+                              value.newTag[0].newTag
+                                ? addTags(value.newTag[0].newTag)
+                                : null,
+                              tagForm.resetFields()
+                            )}
+                          >
+                            {/* <Form.Item name="newTag">
                                 <Input
                                   type="text"
                                   size="small"
@@ -469,10 +522,123 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                                 >
                                   Add
                                 </Button>
-                              </Form.Item>
-                            </Form>
-                          )}
-                          {!inputVisible && (
+                              </Form.Item> */}
+                            <Form.List name="newTag">
+                              {(fields, { add, remove }) => (
+                                <>
+                                  {fields.map(({ key, name, ...restField }) => (
+                                    <div
+                                      key={key}
+                                      className="flex justify-start items-center gap-2 mb-2.5"
+                                    >
+                                      {/* <Form.Item
+                                        {...restField}
+                                        name={[name, "newTag"]}
+                                        rules={[
+                                          {
+                                            required: true,
+                                            message: "Please leave a tag",
+                                          },
+                                        ]}
+                                        className="m-0"
+                                      >
+                                        <Input.TextArea
+                                          className="rounded w-full"
+                                          placeholder="Add a new tag"
+                                          allowClear
+                                          autoSize
+                                        />
+                                      </Form.Item> */}
+                                      <Form.Item
+                                        {...restField}
+                                        name={[name, "newTag"]}
+                                        className="m-0"
+                                      >
+                                        <Select
+                                          style={{
+                                            width: 300,
+                                          }}
+                                          mode="multiple"
+                                          allowClear
+                                          placeholder="Add tags"
+                                          dropdownRender={(menu) => (
+                                            <>
+                                              {menu}
+                                              <Divider
+                                                style={{
+                                                  margin: "8px 0",
+                                                }}
+                                              />
+                                              <Space
+                                                style={{
+                                                  padding: "0 8px 4px",
+                                                }}
+                                              >
+                                                <Input
+                                                  placeholder="Add new tag"
+                                                  ref={inputRef}
+                                                  value={newTag}
+                                                  onChange={(e) =>
+                                                    setNewTag(e.target.value)
+                                                  }
+                                                  onKeyDown={(e) =>
+                                                    e.stopPropagation()
+                                                  }
+                                                />
+                                                <Button
+                                                  type="text"
+                                                  icon={<PlusOutlined />}
+                                                  onClick={addItem}
+                                                >
+                                                  Add tag
+                                                </Button>
+                                              </Space>
+                                            </>
+                                          )}
+                                          options={allTags.map((item) => ({
+                                            label: item.title,
+                                            value: item.value,
+                                          }))}
+                                        />
+                                      </Form.Item>
+                                      <MinusCircleOutlined
+                                        onClick={() => [
+                                          remove(name),
+                                          setAddTagVisible(false),
+                                        ]}
+                                      />
+                                    </div>
+                                  ))}
+                                  <Form.Item>
+                                    {addTagVisible ? (
+                                      <Button
+                                        className="h-full btn-active rounded"
+                                        htmlType="submit"
+                                        type="primary"
+                                        disabled={!addTagSubmittable}
+                                      >
+                                        Submit
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        type="dashed"
+                                        className="border-[#d32f2f] hover:!border-[#d32f2f]"
+                                        onClick={() => [
+                                          add(),
+                                          setAddTagVisible(true),
+                                        ]}
+                                        icon={<PlusOutlined />}
+                                      >
+                                        Add New Tag
+                                      </Button>
+                                    )}
+                                  </Form.Item>
+                                </>
+                              )}
+                            </Form.List>
+                          </Form>
+                          {/* )} */}
+                          {/* {!inputVisible && (
                             <div>
                               <Tag
                                 className="my-1 border border-dashed border-[#d32f2f]"
@@ -481,7 +647,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                                 <PlusOutlined /> New Tag
                               </Tag>
                             </div>
-                          )}
+                          )} */}
                           <Divider orientation="left">
                             <Text strong italic>
                               Notes:

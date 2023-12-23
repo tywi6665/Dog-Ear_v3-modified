@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import RequireAuth from "../../utils/RequireAuth";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -17,10 +17,11 @@ import {
   Checkbox,
   Form,
   Input,
-  TreeSelect,
   Rate,
   Tooltip,
   Spin,
+  Select,
+  Divider,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -30,9 +31,8 @@ import {
 
 const RecipeEdit = RequireAuth(({ displayMessage }) => {
   const recipe = useSelector((state) => state.recipe.recipe);
-  const tagOptions = [
-    ...useSelector((state) => state.catalog.searchOptions.tags),
-  ];
+  const catalog = useSelector((state) => state.catalog);
+  const searchOptions = useSelector((state) => state.catalog.searchOptions);
   const navigate = useNavigate();
 
   const [url, setUrl] = useState(recipe.url);
@@ -40,7 +40,9 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
   const [imgSrc, setImgSrc] = useState(recipe.img_src);
   const [description, setDescription] = useState(recipe.description);
   const [author, setAuthor] = useState(recipe.author);
+  const [allTags, setAllTags] = useState([]);
   const [tags, setTags] = useState(titleCaseArr(recipe.tags));
+  const [newTag, setNewTag] = useState("");
   const [allNotes, setAllNotes] = useState(recipe.notes);
   const [hasMade, setHasMade] = useState(recipe.has_made);
   const [rating, setRating] = useState(recipe.rating);
@@ -48,11 +50,17 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
     flattenIntoString(recipe.ingredients)
   );
   const [steps, setSteps] = useState(flattenIntoString(recipe.steps));
-
+  const inputRef = useRef(null);
   const [form] = Form.useForm();
   // const newNotes = Form.useWatch("notes", { form });
   const { Content } = Layout;
   const { TextArea } = Input;
+
+  useEffect(() => {
+    if (Object.keys(catalog).length) {
+      setAllTags(searchOptions.tags);
+    }
+  }, [catalog]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -88,7 +96,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
       title: titleCase(title),
       author: titleCase(author),
       description: description,
-      tags: titleCaseArr(tags),
+      tags: titleCaseArr(tags.sort()),
       notes: newNotes,
       has_made: hasMade,
       rating: rating,
@@ -118,6 +126,35 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
     let copy = JSON.parse(JSON.stringify([...allNotes]));
     copy[i].text = value;
     setAllNotes(copy);
+  };
+
+  const addItem = (e) => {
+    e.preventDefault();
+    const newTagTrimmed = titleCase(newTag.trim());
+    const isPresent = allTags.map((tag) => tag.value).indexOf(newTagTrimmed);
+    if (newTagTrimmed.length && isPresent === -1) {
+      const sorted = [
+        ...allTags,
+        {
+          title: newTagTrimmed,
+          key: newTagTrimmed,
+          value: newTagTrimmed,
+        },
+      ].sort((a, b) => -b.title.localeCompare(a.title));
+      setAllTags(sorted);
+    } else if (!newTagTrimmed.length) {
+      displayMessage("Please write a tag", "error");
+    } else if (isPresent >= 0) {
+      displayMessage(
+        `The tag ${titleCase(newTagTrimmed)} is already exists`,
+        "error"
+      );
+    }
+
+    setNewTag("");
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   return Object.keys(recipe).length ? (
@@ -220,7 +257,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
           />
         </Form.Item>
 
-        <Form.Item label="Recipe Tags" name="tags" wrapperCol={{ span: 12 }}>
+        {/* <Form.Item label="Recipe Tags" name="tags" wrapperCol={{ span: 12 }}>
           <TreeSelect
             treeData={tagOptions.sort(
               (a, b) => -b.title.localeCompare(a.title)
@@ -230,6 +267,45 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
             }}
             treeCheckable
             placeholder="Please select"
+          />
+        </Form.Item> */}
+        <Form.Item label="Recipe Tags" name="tags" wrapperCol={{ span: 24 }}>
+          <Select
+            className="w-full"
+            mode="multiple"
+            allowClear
+            placeholder="Add tags"
+            onChange={(value) => setTags(value)}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider
+                  style={{
+                    margin: "8px 0",
+                  }}
+                />
+                <Space
+                  style={{
+                    padding: "0 8px 4px",
+                  }}
+                >
+                  <Input
+                    placeholder="Add new tag"
+                    ref={inputRef}
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                  <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                    Add tag
+                  </Button>
+                </Space>
+              </>
+            )}
+            options={allTags.map((tag) => ({
+              label: tag.title,
+              value: tag.value,
+            }))}
           />
         </Form.Item>
 
@@ -269,7 +345,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
                         placeholder="Add a new note"
                         allowClear
                         autoSize
-                        defaultValue={allNotes[key].text}
+                        initialValues={allNotes[key].text}
                       />
                     </Form.Item>
                     <MinusCircleOutlined
