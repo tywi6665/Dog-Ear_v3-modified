@@ -20,7 +20,7 @@ import {
   Select,
   Divider,
 } from "antd";
-import { titleCase, titleCaseArr, parseIngredients } from "../../utils";
+import { stringify, titleCase, titleCaseArr } from "../../utils";
 import SubmitButton from "../../components/SubmitButton";
 // import {
 //   directUploadStart,
@@ -146,8 +146,8 @@ const RecipeEntry = ({
       notes: newNotes,
       has_made: hasMade,
       rating: rating,
-      ingredients: parseIngredients(ingredients),
-      steps: parseIngredients(steps),
+      ingredients: stringify(ingredients, "ingredients"),
+      steps: stringify(steps, "steps"),
     };
     handleAddRecipe(recipe);
     disconnect(

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { update_Recipe } from "./RecipeEditActions";
 import {
   flattenIntoString,
-  parseIngredients,
+  stringify,
   titleCase,
   titleCaseArr,
 } from "../../utils";
@@ -100,11 +100,11 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
       notes: newNotes,
       has_made: hasMade,
       rating: rating,
-      ingredients: parseIngredients(ingredients),
-      steps: parseIngredients(steps),
+      ingredients: stringify(ingredients, "ingredients"),
+      steps: stringify(steps, "steps"),
     };
 
-    update_Recipe(recipe.id, updatedRecipe, navigate, displayMessage);
+    // update_Recipe(recipe.id, updatedRecipe, navigate, displayMessage);
   };
 
   const removeNote = (i) => {
@@ -334,6 +334,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
                     key={key}
                     className="flex justify-center items-center gap-2 mb-2.5"
                   >
+                    {key + 1}.
                     <Form.Item
                       {...restField}
                       name={[name, "text"]}

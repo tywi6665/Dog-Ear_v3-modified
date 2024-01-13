@@ -5,7 +5,8 @@ from django_prometheus.models import ExportModelOperationsMixin
 
 User = get_user_model()
 
-class RecipeItem(ExportModelOperationsMixin('RecipeItem'), models.Model):
+
+class RecipeItem(ExportModelOperationsMixin("RecipeItem"), models.Model):
     unique_id = models.UUIDField(default="", unique=True)
     url = models.URLField(max_length=1000, default="", blank=True)
     title = models.CharField(max_length=1000, default="")
@@ -16,8 +17,10 @@ class RecipeItem(ExportModelOperationsMixin('RecipeItem'), models.Model):
     notes = models.JSONField(default=list)
     rating = models.IntegerField(default=0)
     tags = models.JSONField(default=list)
-    ingredients = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
-    steps = models.TextField(max_length=None, default='[{"header":"","content":[]}]', blank=True)
+    # OLD - default='[{"header":"","content":[]}]'
+    ingredients = models.TextField(max_length=None, default="[]", blank=True)
+    # OLD - default='[{"header":"","content":[]}]'
+    steps = models.TextField(max_length=None, default="[]", blank=True)
     timestamp = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 

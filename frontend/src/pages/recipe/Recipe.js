@@ -35,9 +35,9 @@ import {
   CheckOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
-import { titleCase, testJSON } from "../../utils";
+import { titleCase, testJSON, flattenIntoString_new } from "../../utils";
 import parse, { domToReact } from "html-react-parser";
-// import { parse } from "recipe-ingredient-parser-v3";
+import { parseIngredient } from "parse-ingredient";
 
 const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   const catalog = useSelector((state) => state.catalog);
@@ -95,6 +95,64 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   }, [recipe]);
 
   useEffect(() => {
+    if (Object.keys(recipe).length) {
+      const parsedSteps = JSON.parse(recipe.steps);
+      const newSteps = [];
+      if (
+        parsedSteps.length === 1 &&
+        !parsedSteps[0].header.length &&
+        !parsedSteps[0].content.length
+      ) {
+        patch_Recipe(recipe.id, { steps: "[]" }, dispatch, displayMessage);
+      } else if (
+        parsedSteps.length >= 1 &&
+        parsedSteps[0].hasOwnProperty("content")
+      ) {
+        parsedSteps.forEach((step) => {
+          if (step.header.length) {
+            newSteps.push({
+              isGroupHeader: true,
+              description: step.header,
+            });
+          }
+          if (step.content.length) {
+            step.content.forEach((st) => {
+              newSteps.push({
+                isGroupHeader: false,
+                description: st,
+              });
+            });
+          }
+        });
+        patch_Recipe(
+          recipe.id,
+          { steps: JSON.stringify(newSteps) },
+          dispatch,
+          displayMessage
+        );
+      }
+    }
+  }, [recipe]);
+
+  useEffect(() => {
+    if (Object.keys(recipe).length) {
+      const parsedIngredients = JSON.parse(recipe.ingredients);
+      if (
+        parsedIngredients.length === 1 &&
+        !parsedIngredients[0].header.length &&
+        !parsedIngredients[0].content.length
+      ) {
+        patch_Recipe(
+          recipe.id,
+          { ingredients: "[]" },
+          dispatch,
+          displayMessage
+        );
+      }
+    }
+  }, [recipe]);
+
+  useEffect(() => {
     noteForm
       .validateFields({
         validateOnly: true,
@@ -114,7 +172,6 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
       if (tagFormValue.length && tagFormValue[0]) {
         if (tagFormValue[0].newTag.length) {
           setAddTagSubmittable(true);
-          console.log(tagFormValue);
         } else {
           setAddTagSubmittable(false);
         }
@@ -259,7 +316,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
 
   const generateTimeline = (items, type) => {
     items = JSON.parse(items);
-    if (!items[0].content.length) {
+    if (!items.length) {
       return (
         <Timeline>
           <Timeline.Item color="#d32f2f">
@@ -270,38 +327,46 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
         </Timeline>
       );
     } else {
-      return items.map((item) => {
-        if (item.header.length) {
-          return (
-            <React.Fragment key={uuidv4()}>
-              <Paragraph strong italic className="!my-5">
-                {item.header}
-              </Paragraph>
-              <Timeline>
-                {item.content.map((el) => {
-                  return (
-                    <Timeline.Item color="#d32f2f" key={uuidv4()}>
-                      <Text>{el}</Text>
-                    </Timeline.Item>
-                  );
-                })}
-              </Timeline>
-            </React.Fragment>
-          );
-        } else {
-          return (
-            <Timeline key={uuidv4()}>
-              {item.content.map((el) => {
-                return (
-                  <Timeline.Item color="#d32f2f" key={uuidv4()}>
-                    <Text>{el}</Text>
-                  </Timeline.Item>
-                );
-              })}
-            </Timeline>
-          );
-        }
-      });
+      return (
+        <Timeline key={uuidv4()}>
+          {items.map((item, i) => {
+            return item.isGroupHeader ? (
+              <Timeline.Item
+                color="#d32f2f"
+                className="!border-none timeline-header"
+                position="left"
+                key={uuidv4()}
+              >
+                <Title level={5} strong italic className="!mb-0">
+                  {item.description}
+                </Title>
+              </Timeline.Item>
+            ) : (
+              <Timeline.Item
+                color="#d32f2f"
+                className={
+                  items[i + 1] && items[i + 1].isGroupHeader
+                    ? "timeline-last"
+                    : ""
+                }
+                key={uuidv4()}
+              >
+                {item.quantity ? <Text strong>{item.quantity}</Text> : null}
+                {item.quantity2 ? <Text strong>-{item.quantity2}</Text> : null}
+                {item.unitOfMeasure ? (
+                  <Text strong italic>
+                    {" "}
+                    {item.unitOfMeasure}{" "}
+                  </Text>
+                ) : (
+                  " "
+                )}
+                <Text>{item.description}</Text>
+              </Timeline.Item>
+            );
+          })}
+        </Timeline>
+      );
     }
   };
 
@@ -774,11 +839,11 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
                       children: (
                         <>
                           <Divider orientation="left" orientationMargin="0">
-                            <Title level={5}>Ingredients:</Title>
+                            <Title level={4}>Ingredients:</Title>
                           </Divider>
                           {generateTimeline(recipe.ingredients, "ingredients")}
                           <Divider orientation="left" orientationMargin="0">
-                            <Title level={5}>Steps:</Title>
+                            <Title level={4}>Steps:</Title>
                           </Divider>
                           {generateTimeline(recipe.steps, "steps")}
                         </>
