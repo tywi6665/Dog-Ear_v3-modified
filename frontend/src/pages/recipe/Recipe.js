@@ -92,7 +92,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
         patch_Recipe(recipe.id, { notes: notesJSON }, dispatch, displayMessage);
       }
     }
-  }, [recipe]);
+  }, [recipe.steps]);
 
   useEffect(() => {
     if (Object.keys(recipe).length) {
@@ -139,8 +139,9 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
       const parsedIngredients = JSON.parse(recipe.ingredients);
       const newIngredients = [];
       if (
-        parsedIngredients[0].hasOwnProperty("header") ||
-        parsedIngredients[0].hasOwnProperty("content")
+        parsedIngredients.length &&
+        (parsedIngredients[0].hasOwnProperty("header") ||
+          parsedIngredients[0].hasOwnProperty("content"))
       ) {
         if (
           parsedIngredients.length === 1 &&
@@ -154,7 +155,7 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
             displayMessage
           );
         } else if (
-          parsedIngredients.length > 1 &&
+          parsedIngredients.length >= 1 &&
           (parsedIngredients[0].header.length ||
             parsedIngredients[0].content.length)
         ) {
@@ -167,20 +168,20 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
             }
             if (ing.content.length) {
               ing.content.forEach((content) => {
-                newIngredients.push(parseIngredient(content));
+                newIngredients.push(parseIngredient(content)[0]);
               });
             }
           });
           patch_Recipe(
             recipe.id,
-            { steps: JSON.stringify(newIngredients) },
+            { ingredients: JSON.stringify(newIngredients) },
             dispatch,
             displayMessage
           );
         }
       }
     }
-  }, [recipe]);
+  }, [recipe.ingredients]);
 
   useEffect(() => {
     noteForm
