@@ -135,47 +135,49 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
   }, [recipe]);
 
   useEffect(() => {
-    if (
-      Object.keys(recipe).length &&
-      (recipe.hasOwnProperty("header") || recipe.hasOwnProperty("content"))
-    ) {
+    if (Object.keys(recipe).length) {
       const parsedIngredients = JSON.parse(recipe.ingredients);
       const newIngredients = [];
       if (
-        parsedIngredients.length === 1 &&
-        !parsedIngredients[0].header.length &&
-        !parsedIngredients[0].content.length
+        parsedIngredients[0].hasOwnProperty("header") ||
+        parsedIngredients[0].hasOwnProperty("content")
       ) {
-        patch_Recipe(
-          recipe.id,
-          { ingredients: "[]" },
-          dispatch,
-          displayMessage
-        );
-      } else if (
-        parsedIngredients.length > 1 &&
-        (parsedIngredients[0].header.length ||
-          parsedIngredients[0].content.length)
-      ) {
-        parsedIngredients.forEach((ing) => {
-          if (ing.header.length) {
-            newIngredients.push({
-              isGroupHeader: true,
-              description: ing.header,
-            });
-          }
-          if (ing.content.length) {
-            ing.content.forEach((content) => {
-              newIngredients.push(parseIngredient(content));
-            });
-          }
-        });
-        patch_Recipe(
-          recipe.id,
-          { steps: JSON.stringify(newIngredients) },
-          dispatch,
-          displayMessage
-        );
+        if (
+          parsedIngredients.length === 1 &&
+          !parsedIngredients[0].header.length &&
+          !parsedIngredients[0].content.length
+        ) {
+          patch_Recipe(
+            recipe.id,
+            { ingredients: "[]" },
+            dispatch,
+            displayMessage
+          );
+        } else if (
+          parsedIngredients.length > 1 &&
+          (parsedIngredients[0].header.length ||
+            parsedIngredients[0].content.length)
+        ) {
+          parsedIngredients.forEach((ing) => {
+            if (ing.header.length) {
+              newIngredients.push({
+                isGroupHeader: true,
+                description: ing.header,
+              });
+            }
+            if (ing.content.length) {
+              ing.content.forEach((content) => {
+                newIngredients.push(parseIngredient(content));
+              });
+            }
+          });
+          patch_Recipe(
+            recipe.id,
+            { steps: JSON.stringify(newIngredients) },
+            dispatch,
+            displayMessage
+          );
+        }
       }
     }
   }, [recipe]);
