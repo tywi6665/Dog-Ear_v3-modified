@@ -148,7 +148,13 @@ const Recipe = RequireAuth(({ dispatch, displayMessage }) => {
           dispatch,
           displayMessage
         );
-      }
+      } else
+        patch_Recipe(
+          recipe.id,
+          { ingredients: JSON.stringify(parseIngredient(parsedIngredients)) },
+          dispatch,
+          displayMessage
+        );
     }
   }, [recipe]);
 
