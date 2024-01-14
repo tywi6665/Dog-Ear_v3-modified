@@ -104,7 +104,7 @@ const RecipeEdit = RequireAuth(({ displayMessage }) => {
       steps: stringify(steps, "steps"),
     };
 
-    // update_Recipe(recipe.id, updatedRecipe, navigate, displayMessage);
+    update_Recipe(recipe.id, updatedRecipe, navigate, displayMessage);
   };
 
   const removeNote = (i) => {
